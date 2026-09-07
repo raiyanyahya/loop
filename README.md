@@ -372,7 +372,7 @@ Three workflows in `.github/workflows/`:
 | workflow | runs | does |
 |---|---|---|
 | CI | every push and pull request | `npm test` on Node 18, 20, and 22 on Ubuntu and macOS, the demo end to end, a tarball check, and a check that `docs/demo.svg` is reproducible |
-| Publish | on a `v*` tag | tests, verifies the tag matches `package.json`, publishes `loop-cli` to npm with provenance (needs an `NPM_TOKEN` secret) |
+| Publish | on a `v*` tag | tests, verifies the tag matches `package.json`, publishes `loop-cli` to npm with provenance (uses the `loop` repository secret as the npm token) |
 | Website | pushes to `main` that touch `docs/` | deploys `docs/` to GitHub Pages |
 
 Release: bump the version, add a changelog entry, `git tag v0.2.0`, push the tag.

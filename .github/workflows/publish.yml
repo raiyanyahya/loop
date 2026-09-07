@@ -27,4 +27,4 @@ jobs:
           [ "refs/tags/v$v" = "$GITHUB_REF" ] || { echo "tag $GITHUB_REF does not match package version $v"; exit 1; }
       - run: npm publish --provenance --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.loop }}
