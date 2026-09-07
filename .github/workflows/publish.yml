@@ -31,4 +31,10 @@ jobs:
         run: |
           v=$(node -p "require('./package.json').version")
           [ "refs/tags/v$v" = "$GITHUB_REF" ] || { echo "tag $GITHUB_REF does not match package version $v"; exit 1; }
+      - name: Identity npm will see (compare with the trusted publisher on npmjs.com)
+        run: |
+          echo "repository        : $GITHUB_REPOSITORY        -> user 'raiyanyahya', repository 'loop'"
+          echo "workflow file     : ${GITHUB_WORKFLOW_REF#*/.github/workflows/}" | sed 's/@.*//'
+          echo "environment       : ${GITHUB_ENVIRONMENT:-(none; leave the field empty on npmjs.com)}"
+          echo "package           : $(node -p "require('./package.json').name")@$(node -p "require('./package.json').version")"
       - run: npm publish --access public
