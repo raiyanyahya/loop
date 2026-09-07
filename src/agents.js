@@ -92,6 +92,13 @@ export const AGENTS = {
   },
 };
 
+/** A single argv element is limited (128 KiB on Linux); past that, point the agent at the prompt file instead. */
+export const ARG_PROMPT_LIMIT = 100000;
+export function promptForArgMode(prompt, promptFile) {
+  if (prompt.length <= ARG_PROMPT_LIMIT) return prompt;
+  return `Read the file ${promptFile} in full and follow the instructions in it exactly. It is your complete prompt for this iteration.`;
+}
+
 export const PREFERRED_ORDER = ['claude', 'codex', 'gemini', 'opencode', 'copilot', 'aider', 'amp', 'goose', 'cursor'];
 
 export function agentNames() {
@@ -156,7 +163,8 @@ function buildBare({ agent, cfg, prompt, promptFile, base }) {
   if (!a) throw new Error(`unknown agent "${agent}" (known: ${agentNames().join(', ')}; or set command: in the Loopfile)`);
   const file = agent === 'fake' ? a.bin : agentPath(agent);
   if (!file) throw new Error(`agent "${agent}" is not installed (${a.install})`);
-  const args = [...a.args({ model: cfg.model, prompt, promptFile, permissions: cfg.permissions || 'bypass' }), ...cfg.args];
+  const argPrompt = a.input === 'arg' ? promptForArgMode(prompt, promptFile) : prompt;
+  const args = [...a.args({ model: cfg.model, prompt: argPrompt, promptFile, permissions: cfg.permissions || 'bypass' }), ...cfg.args];
   const finalEnv = a.env ? a.env(base) : base;
   const display = [a.bin, ...args.map((x) => (x === prompt ? '<prompt>' : x === promptFile ? '<promptfile>' : x))].join(' ');
   return { file, args, input: a.input, stdinText: a.input === 'stdin' ? prompt : null, env: finalEnv, parse: a.parse || null, display };

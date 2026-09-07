@@ -7,7 +7,7 @@ Thanks for looking. The whole tool is a few thousand lines of plain Node with no
 ```
 git clone https://github.com/raiyanyahya/loop
 cd loop
-npm test                 # 68 tests, no API key needed: a scripted fake agent plays every role
+npm test                 # 78 tests, no API key needed: a scripted fake agent plays every role
 npm run test:torture     # edge cases against the real CLI
 node bin/loop.js demo    # a real loop in a temporary git repo
 npm link                 # puts `loop` on your PATH from this checkout

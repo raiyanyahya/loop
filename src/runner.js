@@ -86,7 +86,10 @@ export async function runLoop({ cwd, loopfilePath, inlinePrompt, overrides = {},
     if (!useGit) throw new Error('git.worktree needs a git repository');
     const wt = await git.ensureWorktree(homeDir, cfg.git.branch, path.join('.loop', 'worktrees', cfg.name));
     workDir = wt.path;
-    if (loopfilePath && !fs.existsSync(path.join(workDir, loopfileRel))) fs.copyFileSync(loopfilePath, path.join(workDir, loopfileRel));
+    if (loopfilePath && !fs.existsSync(path.join(workDir, loopfileRel))) {
+      fs.mkdirSync(path.dirname(path.join(workDir, loopfileRel)), { recursive: true });
+      fs.copyFileSync(loopfilePath, path.join(workDir, loopfileRel));
+    }
     if (loopfilePath) loopfileWork = path.join(workDir, loopfileRel);
     if (!quiet) ui.step(`git: ${wt.created ? 'created' : 'reusing'} worktree ${c.dim(path.relative(homeDir, workDir))} on ${cfg.git.branch}`);
   } else if (cfg.git.branch && useGit) {
@@ -146,10 +149,16 @@ export async function runLoop({ cwd, loopfilePath, inlinePrompt, overrides = {},
   journal.writeState(state);
   journal.event('start', { name: cfg.name, agents, until: cfg.until, max: cfg.max, loopfile: loopfileRel, cwd: homeDir, workDir, metric: cfg.metric, keep: cfg.keep, critic: cfg.critic ? cfg.critic.agent || 'same' : null, protect: cfg.protect });
 
+  // From here on the state file says "running"; a setup failure must still leave a truthful record.
+  const failSetup = (message) => {
+    journal.writeState({ ...state, status: 'failed', reason: message, pid: null, endedAt: new Date().toISOString() });
+    journal.event('end', { status: 'failed', reason: message, iterations: 0, cost: 0, elapsedMs: elapsed() });
+    throw new Error(message);
+  };
   if (useGit && (cfg.keep !== 'always' || cfg.protect.length)) {
     const b = await git.baselineCommit(workDir, `loop(${cfg.name}): baseline before run`);
     if (b && b.sha && !quiet) ui.step(`git: committed baseline ${b.sha} ${c.dim('(uncommitted changes, so keep/revert has a known state)')}`);
-    if (b && b.error) throw new Error(`could not commit baseline: ${b.error}`);
+    if (b && b.error) failSetup(`could not commit the baseline: ${truncate(b.error, 300)}`);
   }
   const hookEnvBase = () => ({ LOOP: '1', LOOP_NAME: cfg.name, LOOP_WORKDIR: workDir, ...cfg.env });
   const measure = async () => {
@@ -283,6 +292,12 @@ export async function runLoop({ cwd, loopfilePath, inlinePrompt, overrides = {},
       killChild = () => {};
       const ms = Date.now() - t0;
       fs.writeFileSync(path.join(iterDir, 'output.txt'), res.all);
+      if (res.error) {
+        const hint = /E2BIG/.test(res.error) ? ' (the prompt is too large to pass as an argument; use an agent that reads stdin, or shrink context: files)' : '';
+        ui.error(`could not start the agent: ${res.error}${hint}`);
+        journal.event('note', { n, text: `agent failed to start: ${res.error}` });
+      }
+      if (res.orphans && !quiet) ui.warn('the agent left background processes running; they were detached from the loop');
 
       const after = await git.snapshot(workDir, useGit);
       let { files: changed } = git.diffSnapshots(before, after);
@@ -297,8 +312,19 @@ export async function runLoop({ cwd, loopfilePath, inlinePrompt, overrides = {},
         if (!quiet) ui.warn(`protected files modified: ${violations.join(', ')}${restored.length ? ' (restored)' : ' (cannot restore without git)'}`);
       }
       let checklistRestored = false;
+      let configRestored = false;
       if (loopfileWork && loopfileBefore !== null) {
-        const fixed = enforceChecklist(loopfileBefore, readIfExists(loopfileWork));
+        let current = readIfExists(loopfileWork);
+        // The agent may tick boxes and edit the goal, never the loop's own configuration: a hook or
+        // check written into the frontmatter would run as the loop's user on the next iteration.
+        const restoredConfig = enforceFrontmatter(loopfileBefore, current);
+        if (restoredConfig !== null) {
+          fs.writeFileSync(loopfileWork, restoredConfig);
+          current = restoredConfig;
+          configRestored = true;
+          if (!quiet) ui.warn('the Loopfile frontmatter was modified by the agent; restored it (edit the configuration between iterations, not from inside one)');
+        }
+        const fixed = enforceChecklist(loopfileBefore, current);
         if (fixed !== null) {
           fs.writeFileSync(loopfileWork, fixed);
           checklistRestored = true;
@@ -345,6 +371,11 @@ export async function runLoop({ cwd, loopfilePath, inlinePrompt, overrides = {},
         failures.push('the checklist was altered and had to be restored');
         extraNotes.push('You changed the checklist text last iteration. The loop restored it. Only tick boxes; never edit the items.');
       }
+      if (configRestored) {
+        satisfied = false;
+        failures.push('the Loopfile configuration was modified and had to be restored');
+        extraNotes.push('You edited the frontmatter of the Loopfile last iteration. The loop restored it. The configuration belongs to the human; change the goal or tick boxes only.');
+      }
 
       let metricValue = null;
       let metricImproved = false;
@@ -377,6 +408,7 @@ export async function runLoop({ cwd, loopfilePath, inlinePrompt, overrides = {},
         }
       }
       let commit = null;
+      let commitFailed = null;
       if (revertReason && useGit) {
         await git.revertToHead(workDir);
         result = 'reverted';
@@ -393,9 +425,21 @@ export async function runLoop({ cwd, loopfilePath, inlinePrompt, overrides = {},
           const summaryLine = firstLine(letterAfter) || firstLine(res.text) || `iteration ${n}`;
           commit = await git.commitAll(workDir, `loop(${cfg.name} #${n}): ${truncate(summaryLine, 72)}`);
           if (commit && commit.sha && !quiet) ui.step(`git: committed ${commit.sha}`);
-          if (commit && commit.error && !quiet) ui.warn(`git commit failed: ${truncate(commit.error, 200)}`);
+          if (commit && commit.error) {
+            ui.error(`git commit failed: ${truncate(commit.error, 300)}`);
+            if (cfg.keep !== 'always' || cfg.critic || cfg.protect.length) {
+              // keep/revert, protect, and the critic all rely on HEAD being the last kept state.
+              commitFailed = commit.error;
+            }
+          }
         }
         if (changed.length) state.kept++;
+      }
+      if (commitFailed) {
+        status = 'failed';
+        reason = `git commit failed, so the kept state cannot be trusted: ${truncate(commitFailed, 200)}`;
+        journal.event('iteration', { n, agent, ms, code: res.code, changed, attempted, result: 'commit failed', satisfied: false, failures: [reason], cost: res.cost ?? null, costTotal: cost, signals: sig.raw });
+        break;
       }
       state.metric = cfg.metric ? { ...metricState } : null;
 
@@ -455,7 +499,7 @@ export async function runLoop({ cwd, loopfilePath, inlinePrompt, overrides = {},
       journal.event('iteration', {
         n, agent, ms, code: res.code, timedOut: Boolean(res.timedOut), changed, attempted, cost: res.cost ?? null, costTotal: cost,
         signals: sig.raw, satisfied, failures, commit: commit && commit.sha ? commit.sha : null, result, revertReason, metric: metricValue, best: metricState.best,
-        violations, checklistRestored, critic: critic ? { agent: critic.agent, verdict: critic.verdict } : null, checks: verdict.checks.map((k) => ({ cmd: k.cmd, code: k.code })),
+        violations, checklistRestored, configRestored, critic: critic ? { agent: critic.agent, verdict: critic.verdict } : null, checks: verdict.checks.map((k) => ({ cmd: k.cmd, code: k.code })),
         letter: letterAfter ? truncate(firstLine(letterAfter), 200) : null, ritual: ritual ? ritual.name || ritual.prompt.slice(0, 40) : null,
       });
       state.iteration = n;
@@ -490,6 +534,12 @@ export async function runLoop({ cwd, loopfilePath, inlinePrompt, overrides = {},
       if (sig.ask) {
         if (isTTY && process.stdin.isTTY && !flags.noPrompt) {
           pendingAnswer = await askHuman(sig.ask);
+          if (pendingAnswer === null) {
+            stopRequested = stopRequested || 'interrupted (Ctrl-C)';
+            question = sig.ask;
+            reason = stopRequested;
+            break;
+          }
           journal.event('answer', { n, question: sig.ask, answer: pendingAnswer });
         } else {
           status = 'waiting';
@@ -530,12 +580,25 @@ export async function runLoop({ cwd, loopfilePath, inlinePrompt, overrides = {},
         reason = 'ran a single iteration (--once)';
         break;
       }
-      const sleepMs = sig.sleep ? parseDuration(sig.sleep, cfg.sleep) : cfg.sleep;
+      let sleepMs = cfg.sleep;
+      if (sig.sleep) {
+        try {
+          sleepMs = Math.min(parseDuration(sig.sleep, cfg.sleep), cfg.max_time);
+        } catch {
+          if (!quiet) ui.warn(`ignoring <loop:sleep>${truncate(sig.sleep, 40)}</loop:sleep>: not a duration`);
+        }
+      }
       if (sleepMs > 0 && !stopRequested) {
         if (!quiet) ui.step(`sleeping ${fmtDuration(sleepMs)}`);
         await interruptibleSleep(sleepMs, () => stopRequested || fs.existsSync(journal.p.stop));
       }
     }
+  } catch (err) {
+    // An unexpected error must still leave a truthful state file, an 'end' event, hooks, and a notification.
+    status = 'failed';
+    reason = `internal error: ${err && err.message ? err.message : err}`;
+    ui.error(reason);
+    if (process.env.LOOP_DEBUG) console.error(err);
   } finally {
     process.off('SIGINT', onSigint);
     process.off('SIGTERM', onTerm);
@@ -603,6 +666,21 @@ async function evaluateUntil(cfg, { sig, checklist }, { cwd, env, quiet }) {
   return { satisfied, failures, feedback, notes, checks };
 }
 
+const FRONTMATTER = /^---[ \t]*\n[\s\S]*?\n---[ \t]*(?:\n|$)/;
+
+/** If the frontmatter changed during an iteration, put the old frontmatter back over the new body. */
+export function enforceFrontmatter(beforeText, afterText) {
+  if (afterText === null || afterText === undefined) return null;
+  const b = FRONTMATTER.exec(beforeText.replace(/\r\n?/g, '\n'));
+  const a = FRONTMATTER.exec(afterText.replace(/\r\n?/g, '\n'));
+  if (!b) return null; // no configuration to protect
+  const beforeFm = b[0];
+  const afterFm = a ? a[0] : '';
+  if (beforeFm === afterFm) return null;
+  const body = a ? afterText.replace(/\r\n?/g, '\n').slice(a[0].length) : afterText.replace(/\r\n?/g, '\n');
+  return beforeFm + body;
+}
+
 /**
  * If checklist items were added, removed, or reworded, rebuild the file from the pre-iteration
  * text and re-apply only the ticks whose item text is unchanged. Returns null when nothing is wrong.
@@ -637,8 +715,9 @@ function runAgent(inv, { cwd, timeout, quiet, setKill }) {
         kill('SIGTERM');
       },
     });
+    // Kill the whole process group: the agent may have exited while a grandchild still holds the pipes.
     const kill = (sig) => {
-      if (!child || child.exitCode !== null) return;
+      if (!child) return;
       try {
         if (process.platform !== 'win32') process.kill(-child.pid, sig);
         else child.kill(sig);
@@ -672,23 +751,44 @@ function runAgent(inv, { cwd, timeout, quiet, setKill }) {
       child.stdin.on('error', () => {});
       child.stdin.end(inv.stdinText);
     }
-    child.on('error', (err) => {
+    let settled = false;
+    const finish = (result) => {
+      if (settled) return;
+      settled = true;
       clearTimeout(timer);
-      resolve({ code: 127, error: err.message, timedOut, authFailed, ...renderer.finish() });
+      resolve(result);
+    };
+    child.on('error', (err) => finish({ code: 127, error: err.message, timedOut, authFailed, ...renderer.finish() }));
+    child.on('exit', (code, signal) => {
+      // 'close' waits for the stdio pipes; a background grandchild can hold them open long after
+      // the agent exited. Give the pipes a moment, then cut them and move on.
+      setTimeout(() => {
+        if (settled) return;
+        try {
+          child.stdout.destroy();
+          child.stderr.destroy();
+        } catch {
+          /* already closed */
+        }
+        finish({ code: code === null ? (signal ? 128 : 1) : code, signal, timedOut, authFailed, orphans: true, ...renderer.finish() });
+      }, 2000).unref();
     });
-    child.on('close', (code, signal) => {
-      clearTimeout(timer);
-      resolve({ code: code === null ? (signal ? 128 : 1) : code, signal, timedOut, authFailed, ...renderer.finish() });
-    });
+    child.on('close', (code, signal) => finish({ code: code === null ? (signal ? 128 : 1) : code, signal, timedOut, authFailed, ...renderer.finish() }));
   });
 }
 
+/** Ask the human at the terminal. Resolves null if they press Ctrl-C or close stdin. */
 async function askHuman(q) {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   ui.raw(`\n  ${c.bold(c.yellow('The agent asks:'))} ${q}\n`);
-  const answer = await new Promise((r) => rl.question(`  ${c.cyan('your answer >')} `, r));
+  const answer = await new Promise((resolve) => {
+    rl.question(`  ${c.cyan('your answer >')} `, (a) => resolve(a));
+    rl.on('SIGINT', () => resolve(null));
+    rl.on('close', () => resolve(null));
+  });
   rl.close();
   ui.blank();
+  if (answer === null) return null;
   return answer.trim() || '(no answer given; use your best judgement)';
 }
 

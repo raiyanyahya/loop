@@ -5,13 +5,13 @@ import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
 import { runLoop } from './runner.js';
 import { findLoopfile, resolveLoopfile, parseLoopfile, normalizeConfig, LOOPFILE_NAMES } from './loopfile.js';
-import { AGENTS, agentNames, detectAgents, agentPath, PREFERRED_ORDER } from './agents.js';
+import { AGENTS, detectAgents, agentPath, PREFERRED_ORDER } from './agents.js';
 import { readState, listRuns, readRun, requestStop, writeAnswer, paths } from './journal.js';
 import { buildReport } from './report.js';
 import { listTemplates, renderTemplate, TEMPLATE_INFO, KINDS } from './templates.js';
 import { ensureGitignore } from './git.js';
 import { ui } from './render.js';
-import { color as c, fmtDuration, fmtMoney, readIfExists, runShell, pidAlive, isTTY, truncate, exists } from './util.js';
+import { color as c, fmtDuration, fmtMoney, readIfExists, runShell, runCmd, pidAlive, isTTY, truncate, exists } from './util.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const VERSION = JSON.parse(fs.readFileSync(path.join(here, '..', 'package.json'), 'utf8')).version;
@@ -42,6 +42,7 @@ const HELP = `
     --max <n>          max iterations            --max-time <dur>   e.g. 8h
     --max-cost <usd>   stop at this spend (claude)   --sleep <dur>  pause between iterations
     --once             run one iteration only   --dry              print the prompt + command, run nothing
+    --no-prompt        never ask questions at the terminal; park the loop instead (for scripts)
     --fresh            forget the letter first  --quiet            headers only, no agent output
 
   ${c.bold('The loop protocol')} ${c.dim('(what the agent writes, on its own line)')}
@@ -116,7 +117,7 @@ async function cmdRun(cwd, args, flags) {
     notify: flags.notify,
     permissions: flags.permissions,
   };
-  const runFlags = { dry: Boolean(flags.dry), once: Boolean(flags.once), fresh: Boolean(flags.fresh), quiet: Boolean(flags.quiet || flags.q) };
+  const runFlags = { dry: Boolean(flags.dry), once: Boolean(flags.once), fresh: Boolean(flags.fresh), quiet: Boolean(flags.quiet || flags.q), noPrompt: Boolean(flags['no-prompt']) };
 
   if (flags.p !== undefined || flags.prompt !== undefined) {
     const prompt = String(flags.p ?? flags.prompt);
@@ -239,6 +240,8 @@ function cmdTemplates() {
 async function cmdDemo(cwd, flags) {
   const dir = flags.dir ? path.resolve(cwd, flags.dir) : fs.mkdtempSync(path.join(os.tmpdir(), 'loop-demo-'));
   fs.mkdirSync(dir, { recursive: true });
+  // The demo writes files and creates a git repo: it must never land in a directory that has anything in it.
+  if (fs.readdirSync(dir).length) throw new Error(`${path.relative(cwd, dir) || dir} is not empty. The demo creates files and a git repo; point --dir at an empty directory or leave it out for a temporary one.`);
   const quick = Boolean(flags.quick);
   const delay = quick ? 0 : 350;
 
@@ -415,8 +418,8 @@ async function cmdReport(cwd, args, flags) {
   fs.writeFileSync(out, html);
   ui.step(`wrote ${c.bold(path.relative(cwd, out))}`);
   if (flags.open) {
-    const opener = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start ""' : 'xdg-open';
-    await runShell(`${opener} ${JSON.stringify(out)}`, { cwd, timeout: 5000 });
+    if (process.platform === 'win32') await runCmd('cmd', ['/c', 'start', '', out], { cwd, timeout: 5000 });
+    else await runCmd(process.platform === 'darwin' ? 'open' : 'xdg-open', [out], { cwd, timeout: 5000 });
   }
   return 0;
 }
@@ -448,8 +451,25 @@ function cmdAnswer(cwd, args) {
   return 0;
 }
 
+/** Where the letter lives for this directory: the last run's work dir and the Loopfile's letter path, else the default. */
+function letterPathFor(cwd) {
+  const st = readState(cwd);
+  let rel = '.loop/letter.md';
+  const lf = st && st.loopfile ? path.resolve(cwd, st.loopfile) : findLoopfile(cwd);
+  if (lf && exists(lf)) {
+    try {
+      const cfg = normalizeConfig(parseLoopfile(fs.readFileSync(lf, 'utf8')).config, {}, { defaultName: path.basename(cwd) });
+      rel = cfg.letter_path;
+    } catch {
+      /* fall back to the default */
+    }
+  }
+  const base = st && st.workDir && exists(st.workDir) ? st.workDir : cwd;
+  return path.isAbsolute(rel) ? rel : path.join(base, rel);
+}
+
 function cmdLetter(cwd, flags) {
-  const p = paths(cwd).letter;
+  const p = letterPathFor(cwd);
   if (flags.clear) {
     try {
       fs.unlinkSync(p);
@@ -461,7 +481,7 @@ function cmdLetter(cwd, flags) {
   }
   const t = readIfExists(p);
   if (t === null) {
-    process.stdout.write(`\n  no letter yet ${c.dim('(the agent writes .loop/letter.md at the end of each iteration)')}\n\n`);
+    process.stdout.write(`\n  no letter yet ${c.dim(`(the agent writes ${path.relative(cwd, p) || p} at the end of each iteration)`)}\n\n`);
     return 1;
   }
   process.stdout.write('\n' + t.trim() + '\n\n');
@@ -486,7 +506,7 @@ async function cmdDoctor(cwd) {
     const p = agentPath(name);
     let version = '';
     if (p) {
-      const v = await runShell(`${JSON.stringify(p)} --version`, { cwd, timeout: 8000 });
+      const v = await runCmd(p, ['--version'], { cwd, timeout: 8000 });
       version = v.code === 0 ? v.output.trim().split('\n')[0] : '';
     }
     const mark = p ? c.green('●') : c.dim('○');
@@ -534,9 +554,9 @@ export function parseArgs(argv) {
         flags[key.slice(3)] = false;
         continue;
       }
-      if (val === undefined && !BOOL_FLAGS.has(key) && i + 1 < argv.length && !argv[i + 1].startsWith('-')) val = argv[++i];
+      if (val === undefined && !BOOL_FLAGS.has(key) && i + 1 < argv.length && isValue(argv[i + 1])) val = argv[++i];
       setFlag(flags, key, val === undefined ? true : val);
-    } else if (a.startsWith('-') && a.length > 1) {
+    } else if (a.startsWith('-') && a.length > 1 && !/^-\d/.test(a)) {
       const key = a.slice(1);
       if (!BOOL_FLAGS.has(key) && i + 1 < argv.length) setFlag(flags, key, argv[++i]);
       else setFlag(flags, key, true);
@@ -544,6 +564,11 @@ export function parseArgs(argv) {
   }
   const [cmd, ...args] = positional;
   return { cmd, args, flags };
+}
+
+/** A token is a flag value unless it looks like another flag; negative numbers are values. */
+function isValue(tok) {
+  return !tok.startsWith('-') || /^-\d/.test(tok);
 }
 
 function setFlag(flags, key, val) {

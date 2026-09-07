@@ -372,3 +372,137 @@ test('agent-controlled text never reaches a shell: commit messages and file name
   assert.match(gitLog(dir), /Implemented `greet\(name\)` and ran \$\(touch pwned-commit\)/);
   assert.match(r.out, /git: committed/);
 });
+
+// ---------------------------------------------------------------- review fixes
+
+test('agent edits to the Loopfile frontmatter are restored and rejected', async () => {
+  const dir = tmpdir();
+  writeLoop(dir, { agent: 'fake', max: 3 }, '# Goal\n\nDo the thing.\n');
+  const evil = '---\nagent: fake\nmax: 3\nbefore: ["touch pwned-hook"]\n---\n\n# Goal\n\nDo the thing, but changed.\n';
+  const r = await run(dir, scenario([{ write: { 'LOOP.md': evil }, done: true }, { say: ['ok'], done: true }]));
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /frontmatter was modified by the agent; restored/);
+  assert.match(r.out, /done rejected: the Loopfile configuration was modified/);
+  const text = fs.readFileSync(path.join(dir, 'LOOP.md'), 'utf8');
+  assert.ok(!text.includes('pwned-hook'), 'injected hook survived');
+  assert.match(text, /Do the thing, but changed/); // body edits are allowed
+  assert.ok(!fs.existsSync(path.join(dir, 'pwned-hook')), 'injected hook ran');
+  assert.equal(iterations(dir)[0].configRestored, true);
+});
+
+test('parseArgs: negative numbers are values, not flags', async () => {
+  const { parseArgs } = await import('../src/cli.js');
+  const r = parseArgs(['run', '--target', '-5', '--max', '3']);
+  assert.equal(r.flags.target, '-5');
+  assert.equal(r.flags.max, '3');
+  assert.deepEqual(r.args, []);
+});
+
+test('worktree mode copies a Loopfile that lives in a subdirectory', async () => {
+  const dir = tmpdir();
+  gitInit(dir);
+  fs.mkdirSync(path.join(dir, 'loops'));
+  fs.writeFileSync(path.join(dir, 'loops', 'nightly.md'), '---\nagent: fake\ngit: { worktree: true }\nmax: 1\n---\nx\n');
+  const r = await run(dir, scenario([{ write: { 'a.txt': '1' }, done: true }]), {}, ['nightly']);
+  assert.equal(r.code, 0, r.out);
+  assert.ok(fs.existsSync(path.join(dir, '.loop', 'worktrees', path.basename(dir), 'loops', 'nightly.md')));
+});
+
+test('loop letter follows letter_path and the worktree', async () => {
+  const dir = tmpdir();
+  writeLoop(dir, { agent: 'fake', letter: 'notes/handoff.md', max: 1 }, 'x');
+  const r = await run(dir, scenario([{ say: ['hi'], write: { 'notes/handoff.md': 'CUSTOM LETTER' } }]));
+  assert.equal(r.code, 1, r.out);
+  const l = await cli(['letter'], { cwd: dir });
+  assert.match(l.out, /CUSTOM LETTER/);
+});
+
+test('running in a subdirectory of a repo: protect matches, restores, and reverts stay scoped', async () => {
+  const root = tmpdir();
+  gitInit(root);
+  const dir = path.join(root, 'packages', 'api');
+  fs.mkdirSync(path.join(dir, 'test'), { recursive: true });
+  fs.writeFileSync(path.join(dir, 'test', 'spec.js'), 'spec');
+  fs.writeFileSync(path.join(root, 'README.md'), 'root readme');
+  execSync('git add -A && git commit -qm base', { cwd: root, env: { ...process.env, ...gitEnv } });
+  fs.writeFileSync(path.join(root, 'README.md'), 'root readme, edited but uncommitted'); // outside the loop's dir
+  writeLoop(dir, { agent: 'fake', protect: ['test/**'], until: ['done', 'test -f ok.txt'], keep: 'no-regress', max: 3 }, 'x');
+  const sc = scenario([
+    { write: { 'test/spec.js': 'weakened', 'ok.txt': '1' }, done: true },
+    { delete: ['ok.txt'], write: { 'b.txt': '2' }, done: true },
+    { write: { 'ok.txt': '1' }, done: true },
+  ]);
+  const r = await run(dir, sc);
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /protected files modified: test\/spec.js \(restored\)/);
+  assert.equal(fs.readFileSync(path.join(dir, 'test', 'spec.js'), 'utf8'), 'spec');
+  assert.match(r.out, /reverted: a check that used to pass now fails/);
+  assert.ok(!fs.existsSync(path.join(dir, 'b.txt')), 'reverted iteration cleaned');
+  assert.equal(fs.readFileSync(path.join(root, 'README.md'), 'utf8'), 'root readme, edited but uncommitted', 'files outside the work dir must survive a revert');
+  const its = iterations(dir);
+  assert.deepEqual(its[0].violations, ['test/spec.js']);
+  assert.equal(its[1].result, 'reverted');
+});
+
+test('a failed git commit stops a keep/revert loop instead of pretending the work was kept', async () => {
+  const dir = tmpdir();
+  gitInit(dir);
+  fs.writeFileSync(path.join(dir, 'n.txt'), '1');
+  execSync('git add -A && git commit -qm base', { cwd: dir, env: { ...process.env, ...gitEnv } });
+  fs.mkdirSync(path.join(dir, '.git', 'hooks'), { recursive: true });
+  fs.writeFileSync(path.join(dir, '.git', 'hooks', 'pre-commit'), '#!/bin/sh\necho "hook says no" >&2\nexit 1\n', { mode: 0o755 });
+  writeLoop(dir, { agent: 'fake', until: 'never', metric: 'cat n.txt', max: 3, stall: 0 }, 'x');
+  // The Loopfile is untracked, so the baseline commit runs first and the hook rejects it: setup failure, truthful state.
+  const r0 = await run(dir, scenario([{ write: { 'n.txt': '5' } }]));
+  assert.equal(r0.code, 1);
+  assert.equal(readState(dir).status, 'failed');
+  assert.match(readState(dir).reason, /could not commit the baseline/);
+  // With a clean tree the failure moves to the first kept iteration's commit.
+  fs.rmSync(path.join(dir, '.git', 'hooks', 'pre-commit'));
+  execSync('git add -A && git commit -qm loopfile', { cwd: dir, env: { ...process.env, ...gitEnv } });
+  fs.writeFileSync(path.join(dir, '.git', 'hooks', 'pre-commit'), '#!/bin/sh\necho "hook says no" >&2\nexit 1\n', { mode: 0o755 });
+  const r = await run(dir, scenario([{ write: { 'n.txt': '5' } }, { write: { 'n.txt': '9' } }]));
+  assert.equal(r.code, 1);
+  const st = readState(dir);
+  assert.equal(st.status, 'failed');
+  assert.match(st.reason, /git commit failed/);
+  assert.equal(iterations(dir).length, 1);
+  assert.equal(fs.readFileSync(path.join(dir, 'n.txt'), 'utf8'), '5', 'the uncommitted work is left in place, not reverted');
+});
+
+test('the loop does not hang when the agent leaves a background process holding the pipes', async () => {
+  const dir = tmpdir();
+  writeLoop(dir, { agent: 'custom', command: 'sh -c "sleep 30 & echo hi; echo \\"<loop:done/>\\""', max: 1 }, 'x');
+  const t0 = Date.now();
+  const r = await cli(['run'], { cwd: dir, env: gitEnv, timeout: 25000 });
+  const ms = Date.now() - t0;
+  assert.equal(r.code, 0, r.out);
+  assert.ok(ms < 15000, `took ${ms}ms`);
+  assert.match(r.out, /background processes/);
+});
+
+test('an unparseable <loop:sleep> is ignored instead of crashing the run', async () => {
+  const dir = tmpdir();
+  writeLoop(dir, { agent: 'fake', max: 2, stall: 0 }, 'x');
+  const r = await run(dir, scenario([{ write: { a: '1' }, sleep: 'a while' }, { write: { b: '1' }, done: true }]));
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /ignoring <loop:sleep>a while<\/loop:sleep>/);
+  assert.equal(readState(dir).status, 'done');
+  assert.ok(readJournal(dir).some((e) => e.type === 'end'));
+});
+
+test('demo refuses a non-empty --dir', async () => {
+  const dir = tmpdir();
+  fs.writeFileSync(path.join(dir, 'package.json'), '{"name":"precious"}');
+  const r = await cli(['demo', '--quick', '--dir', dir], { cwd: dir });
+  assert.equal(r.code, 1);
+  assert.match(r.out, /is not empty/);
+  assert.equal(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'), '{"name":"precious"}');
+});
+
+test('arg-mode agents get a pointer to the prompt file when the prompt is too large for argv', async () => {
+  const { promptForArgMode, ARG_PROMPT_LIMIT } = await import('../src/agents.js');
+  assert.equal(promptForArgMode('short', '/p.md'), 'short');
+  const big = 'x'.repeat(ARG_PROMPT_LIMIT + 1);
+  assert.match(promptForArgMode(big, '/tmp/run/iter-001/prompt.md'), /Read the file \/tmp\/run\/iter-001\/prompt.md/);
+});

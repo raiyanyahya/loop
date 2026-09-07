@@ -7,7 +7,7 @@
   <a href="https://github.com/raiyanyahya/loop/actions/workflows/pages.yml"><img alt="Website" src="https://github.com/raiyanyahya/loop/actions/workflows/pages.yml/badge.svg"></a>
   <a href="https://www.npmjs.com/package/@raiyanyahya/loop"><img alt="npm" src="https://img.shields.io/npm/v/@raiyanyahya/loop?logo=npm&color=cb3837"></a>
   <a href="https://www.npmjs.com/package/@raiyanyahya/loop"><img alt="downloads" src="https://img.shields.io/npm/dm/@raiyanyahya/loop"></a>
-  <img alt="tests" src="https://img.shields.io/badge/tests-68%20passing-2ea44f">
+  <img alt="tests" src="https://img.shields.io/badge/tests-78%20passing-2ea44f">
   <img alt="node" src="https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white">
   <img alt="dependencies" src="https://img.shields.io/badge/dependencies-0-blue">
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-blue"></a>
@@ -24,7 +24,7 @@ npx @raiyanyahya/loop demo        # watch a loop work, no API key needed
 
 The most powerful way to use a coding agent is not a longer conversation. It is a loop: run the agent, check its work, run it again, until the job is done. People run this with a `while true` in bash. It works, and it is blind: no memory between runs, it believes the agent when it says "done", it never stops on its own, and it leaves no record. Worse, the agent can quietly edit the tests that judge it.
 
-**`loop` is that loop, engineered.** It runs Claude Code, Codex, Gemini CLI, Aider, or any agent CLI in a loop driven by one markdown file, and adds the parts the bash loop was missing. Every design decision follows what the research on long-running agents shows works; the evidence and the scorecard live in [docs/loop-engineering.md](docs/loop-engineering.md).
+**`loop` is that loop, engineered.** It runs Claude Code, Codex, Gemini CLI, Aider, or any agent CLI in a loop driven by one markdown file, and adds the parts the bash loop was missing. Every design decision follows what the research on long-running agents shows works; the reasoning is in [Engineering notes](#engineering-notes).
 
 ## Contents
 
@@ -103,7 +103,7 @@ What comes out of a loop is equally typed: the repository state (kept commits, r
 
 **Keep or revert.** `metric: "node bench.js"` turns the loop into an experiment loop, autoresearch style. The loop measures a baseline before iteration 1, then after each iteration: if the number did not improve on the best so far, the iteration is reverted with git and the history records what was tried. `direction: min` for latencies and losses. `target:` ends the loop as done when reached. `keep: no-regress` reverts any iteration where a check that used to pass now fails, whatever the goal. If the tree is dirty when a keep/revert loop starts, a baseline commit is made first so there is always a known-good state.
 
-**Protected files.** `protect: ["test/**"]` restores any protected file the agent touched (tracked files from git, new files deleted) and rejects the iteration. Checklist items that get reworded, added, or deleted are restored too, keeping legitimate ticks. The verifier is not the agent's to edit.
+**Protected files.** `protect: ["test/**"]` restores any protected file the agent touched (tracked files from git, new files deleted) and rejects the iteration. Checklist items that get reworded, added, or deleted are restored too, keeping legitimate ticks, and so is the Loopfile's frontmatter: an agent cannot loosen `until`, drop `protect`, or plant a hook for the next iteration. The verifier is not the agent's to edit.
 
 **Relay and rituals.** `agent: [claude, codex]` alternates agents every iteration, and the prompt tells each who ran last. Rituals run a different instruction at fixed points: `at: 1` to plan before building, `every: 5` to review, `at: last` to wrap up. A ritual can run on a different agent.
 
@@ -254,7 +254,7 @@ Exit codes: `0` done, `1` stopped or failed, `2` stuck, `3` waiting for an answe
 ## Anatomy of an iteration
 
 1. **Guards.** Iterations, wall clock, cost, a `STOP` file from `loop stop`, Ctrl-C.
-2. **Re-read the Loopfile.** You can edit the goal or the limits while it runs. Ticks are honoured; rewordings are not.
+2. **Re-read the Loopfile.** You can edit the goal or the limits between iterations. Ticks by the agent are honoured; rewordings and frontmatter edits by the agent are not.
 3. **Pick the agent and the instruction.** Relay rotation or a handoff; a ritual replaces the goal if one is due (`at` wins over `every`).
 4. **Hooks and feedback.** `before` hooks, then `feedback` commands, whose output goes into the prompt along with anything carried over from the last verdict.
 5. **Assemble the prompt.** The Loopfile body, a status block, the history table, the notes file, context files, the letter, any human answer, feedback, any rejection or revert or restore from last time, and the rules of the loop. The prompt is written to the journal before the agent runs.
@@ -356,7 +356,7 @@ loop run --dry
 ```
 git clone https://github.com/raiyanyahya/loop
 cd loop
-npm test                 # 68 tests, no API key needed
+npm test                 # 78 tests, no API key needed
 npm run test:torture     # edge cases against the real CLI: unicode paths, huge output, timeouts, concurrency
 node bin/loop.js demo    # a real loop in a temporary git repo
 npm link                 # puts `loop` on your PATH from this checkout
@@ -393,6 +393,6 @@ Release: bump the version, add a changelog entry, `git tag vX.Y.Z`, push the tag
 
 ## Loop engineering
 
-A prompt is a request. A loop is a process. Writing a good Loopfile is a different skill from writing a good prompt: you design the stopping condition before the work, you decide what the loop checks and what it trusts, you give the agent a way to hand off to itself, and you set a budget. The research behind these choices, a scorecard, and what not to build: [docs/loop-engineering.md](docs/loop-engineering.md).
+A prompt is a request. A loop is a process. Writing a good Loopfile is a different skill from writing a good prompt: you design the stopping condition before the work, you decide what the loop checks and what it trusts, you give the agent a way to hand off to itself, and you set a budget.
 
 Zero dependencies. Node 18+. MIT.

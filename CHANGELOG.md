@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.3
+
+Fixes from a full code review, each covered by a test.
+
+- The agent can no longer weaken its own verifier: edits to the Loopfile's frontmatter (until, protect, critic, hooks, limits) made during an iteration are restored and the iteration is rejected. Humans can still edit the configuration between iterations.
+- Running in a subdirectory of a repository works: git reports paths relative to the repository root, so protected files were never matched there and reverts were never scoped. Snapshots, protect, restore, and revert are now all scoped to the loop's directory; uncommitted work elsewhere in the repository is never touched.
+- A failed git commit ends a keep/revert loop as `failed` instead of pretending the iteration was kept; a failed baseline commit is recorded truthfully too.
+- An agent that exits while a background process still holds its output pipes no longer hangs the loop; kills reach the whole process group even after the agent exited.
+- Agent-supplied `<loop:sleep>` text that is not a duration is ignored instead of crashing the run, and any unexpected error still writes the final state, the journal's `end` event, hooks, and the webhook.
+- `loop demo --dir` refuses a non-empty directory instead of overwriting files and committing them.
+- Agents that take the prompt as a command-line argument get a pointer to the prompt file when it would exceed the argument size limit; spawn failures are reported with the reason.
+- `--no-prompt` now works. `loop letter` follows `letter:`, `cwd:`, and worktrees. Negative numbers such as `--target -5` parse as values. Worktree runs create the Loopfile's parent directory. Ctrl-C while a question is open stops the loop cleanly.
+- All git invocations run without a shell, so quoting is identical on every platform. Two remaining shell-interpolated commands in the CLI were converted as well.
+- Removed `docs/loop-engineering.md`; the reasoning lives in the README's Engineering notes.
+
 ## 0.2.2
 
 - First release published through npm trusted publishing (OIDC from GitHub Actions, no token). No code changes since 0.2.1.
@@ -12,7 +27,7 @@
 
 ## 0.2.0
 
-The verifier release, built from a research pass on long-running agents (see `docs/loop-engineering.md`).
+The verifier release, built from a research pass on long-running agents.
 
 - `metric:` with `direction`, `keep: improve | no-regress | always`, and `target:`. Iterations that do not measurably win are reverted with git; a baseline commit is made first if the tree is dirty.
 - `critic:` runs an independent reviewer in a fresh session before "done" is accepted, or every N iterations. `<loop:approve/>` and `<loop:reject>` join the protocol.
