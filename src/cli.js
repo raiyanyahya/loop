@@ -38,6 +38,7 @@ const HELP = `
     --until <cond>     done | checklist | never | "<shell command>"   (repeatable)
     --metric <cmd>     a command that prints a number; --direction min|max; --target <n>
     --critic <agent>   an independent reviewer before "done" counts (or "same")
+    --permissions <p>  bypass (default) | edits (file edits only, no shell) | default (the agent's own)
     --max <n>          max iterations            --max-time <dur>   e.g. 8h
     --max-cost <usd>   stop at this spend (claude)   --sleep <dur>  pause between iterations
     --once             run one iteration only   --dry              print the prompt + command, run nothing
@@ -113,6 +114,7 @@ async function cmdRun(cwd, args, flags) {
     protect: flags.protect,
     memory: flags.memory,
     notify: flags.notify,
+    permissions: flags.permissions,
   };
   const runFlags = { dry: Boolean(flags.dry), once: Boolean(flags.once), fresh: Boolean(flags.fresh), quiet: Boolean(flags.quiet || flags.q) };
 

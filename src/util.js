@@ -161,11 +161,24 @@ export function runShell(cmd, { cwd, env, timeout = 600000, maxOutput = 200000, 
     const started = Date.now();
     const [file, args] = shellCommand(cmd);
     let child;
+    const posix = process.platform !== 'win32';
     try {
-      child = spawn(file, args, { cwd, env: { ...process.env, ...(env || {}) }, stdio: ['ignore', 'pipe', 'pipe'] });
+      child = spawn(file, args, { cwd, env: { ...process.env, ...(env || {}) }, stdio: ['ignore', 'pipe', 'pipe'], detached: posix });
     } catch (err) {
       return resolve({ code: 127, output: String(err.message), ms: 0, timedOut: false });
     }
+    const killAll = (sig) => {
+      try {
+        if (posix) process.kill(-child.pid, sig);
+        else child.kill(sig);
+      } catch {
+        try {
+          child.kill(sig);
+        } catch {
+          /* already gone */
+        }
+      }
+    };
     let out = '';
     let timedOut = false;
     const push = (buf) => {
@@ -178,10 +191,43 @@ export function runShell(cmd, { cwd, env, timeout = 600000, maxOutput = 200000, 
     child.stderr.on('data', push);
     const timer = setTimeout(() => {
       timedOut = true;
+      killAll('SIGKILL');
+    }, timeout);
+    child.on('error', (err) => {
+      clearTimeout(timer);
+      resolve({ code: 127, output: out + String(err.message), ms: Date.now() - started, timedOut });
+    });
+    child.on('close', (code, signal) => {
+      clearTimeout(timer);
+      resolve({ code: code === null ? (signal ? 128 : 1) : code, signal, output: out, ms: Date.now() - started, timedOut });
+    });
+  });
+}
+
+/** Run a program directly (no shell), so untrusted strings in args can never be interpreted. */
+export function runCmd(file, args, { cwd, env, timeout = 600000, maxOutput = 200000 } = {}) {
+  return new Promise((resolve) => {
+    const started = Date.now();
+    let child;
+    try {
+      child = spawn(file, args, { cwd, env: { ...process.env, ...(env || {}) }, stdio: ['ignore', 'pipe', 'pipe'] });
+    } catch (err) {
+      return resolve({ code: 127, output: String(err.message), ms: 0, timedOut: false });
+    }
+    let out = '';
+    let timedOut = false;
+    const push = (buf) => {
+      out += buf.toString();
+      if (out.length > maxOutput) out = out.slice(-maxOutput);
+    };
+    child.stdout.on('data', push);
+    child.stderr.on('data', push);
+    const timer = setTimeout(() => {
+      timedOut = true;
       try {
         child.kill('SIGKILL');
       } catch {
-        /* already gone */
+        /* gone */
       }
     }, timeout);
     child.on('error', (err) => {

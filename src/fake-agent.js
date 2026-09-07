@@ -72,7 +72,7 @@ const run = async () => {
   if (step.check) {
     const lf = path.join(cwd, scenario.loopfile || 'LOOP.md');
     let text = fs.readFileSync(lf, 'utf8');
-    for (let i = 0; i < Number(step.check); i++) text = text.replace(/^(\s*[-*]\s+)\[ \]/m, '$1[x]');
+    for (let i = 0; i < Number(step.check); i++) text = text.replace(/^([ \t]*(?:[-*+]|\d+[.)])\s+)\[ \]/m, '$1[x]');
     fs.writeFileSync(lf, text);
     say(`⚙ Edit ${scenario.loopfile || 'LOOP.md'}  (ticked ${step.check} item${step.check > 1 ? 's' : ''})`);
     if (delay) await wait(delay);
@@ -100,7 +100,8 @@ const run = async () => {
   if (step.reject) say(`<loop:reject>${step.reject}</loop:reject>`);
   if (step.approve) say('<loop:approve/>');
   if (step.done) say('<loop:done/>');
-  process.exit(Number(step.exit ?? 0));
+  // Let stdout drain before exiting: process.exit() would truncate large outputs on a pipe.
+  process.exitCode = Number(step.exit ?? 0);
 };
 
 run();

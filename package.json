@@ -1,7 +1,7 @@
 {
   "name": "loop-cli",
   "version": "0.2.0",
-  "description": "Loop engineering for AI agents. One file, any agent, until it's done.",
+  "description": "Run Claude Code, Codex, or any agent in a loop from one markdown file. Memory, verified done, a critic, keep-or-revert, brakes.",
   "author": "Raiyan Yahya",
   "license": "MIT",
   "homepage": "https://raiyanyahya.github.io/loop",
@@ -32,20 +32,34 @@
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
     "demo": "node bin/loop.js demo",
-    "demo:svg": "node scripts/demo-svg.js"
+    "demo:svg": "node scripts/demo-svg.js",
+    "test:torture": "bash scripts/torture.sh"
   },
   "keywords": [
-    "agent",
-    "agentic",
     "loop",
+    "agent-loop",
+    "ai-agents",
+    "agentic-ai",
+    "coding-agent",
+    "autonomous-agents",
+    "long-running-agents",
     "claude-code",
+    "claude",
+    "anthropic",
     "codex",
+    "openai",
     "gemini-cli",
     "aider",
-    "autonomous",
-    "ralph",
+    "opencode",
+    "ralph-loop",
     "loop-engineering",
-    "ai",
-    "cli"
+    "harness-engineering",
+    "autoresearch",
+    "agent-harness",
+    "ai-coding",
+    "developer-tools",
+    "cli",
+    "llm",
+    "automation"
   ]
 }

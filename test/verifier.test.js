@@ -302,3 +302,73 @@ test('init --kind optimize renders the optimize template; run resolves names', a
   assert.equal(r2.code, 0, r2.out);
   assert.match((await cli(['init', '--list'], { cwd: dir })).out, /optimize[\s\S]*plan-build/);
 });
+
+// ---------------------------------------------------------------- regressions found by independent testing
+
+test('protected files with spaces and accents are matched and restored (git quotePath)', async () => {
+  const dir = tmpdir();
+  gitInit(dir);
+  fs.mkdirSync(path.join(dir, 'tést dir'));
+  fs.writeFileSync(path.join(dir, 'tést dir', 'spec é.txt'), 'keep');
+  execSync('git add -A && git commit -qm base', { cwd: dir, env: { ...process.env, ...gitEnv } });
+  writeLoop(dir, { agent: 'fake', protect: ['tést dir/**'], max: 2, git: true }, 'x');
+  const r = await run(dir, scenario([{ write: { 'tést dir/spec é.txt': 'hacked', 'new fïle.txt': '1' }, done: true }, { write: { 'other.txt': '2' }, done: true }]));
+  assert.equal(r.code, 0, r.out);
+  assert.equal(fs.readFileSync(path.join(dir, 'tést dir', 'spec é.txt'), 'utf8'), 'keep');
+  assert.deepEqual(iterations(dir)[0].violations, ['tést dir/spec é.txt']);
+  assert.match(gitLog(dir), /#2/);
+});
+
+test('a hung check is killed at check_timeout, including its children', async () => {
+  const dir = tmpdir();
+  writeLoop(dir, { agent: 'fake', until: 'sleep 5', check_timeout: '1s', max: 1, stall: 0 }, 'x');
+  const t0 = Date.now();
+  const r = await run(dir, scenario([{ write: { a: '1' } }]));
+  const ms = Date.now() - t0;
+  assert.equal(r.code, 1);
+  assert.match(r.out, /timed out/);
+  assert.ok(ms < 4000, `took ${ms}ms`);
+});
+
+test('300 KB of agent output is captured in full and the final signal still counts', async () => {
+  const dir = tmpdir();
+  writeLoop(dir, { agent: 'fake', max: 1 }, 'x');
+  const sc = scenario([{ say: Array.from({ length: 2000 }, () => 'line of output '.repeat(10)).concat(['<loop:done/>']) }]);
+  fs.writeFileSync(path.join(dir, 'sc.json'), sc);
+  const r = await run(dir, path.join(dir, 'sc.json'), {}, ['--quiet']);
+  assert.equal(r.code, 0, r.out);
+  const runs = path.join(dir, '.loop', 'runs');
+  const out = fs.statSync(path.join(runs, fs.readdirSync(runs).sort().at(-1), 'iter-001', 'output.txt')).size;
+  assert.ok(out > 250000, `output.txt is ${out} bytes`);
+});
+
+test('permissions: edits maps to each adapter\'s edit-only mode', async () => {
+  const { buildInvocation } = await import('../src/agents.js');
+  const cfg = normalizeConfig({ agent: 'claude', permissions: 'edits' });
+  const inv = buildInvocation({ agent: 'fake', cfg: { ...cfg, name: 'x' }, prompt: 'p', promptFile: '/tmp/p.md', iteration: 1 });
+  assert.ok(inv.display.includes('fake-agent.js'));
+  const { AGENTS } = await import('../src/agents.js');
+  assert.deepEqual(AGENTS.claude.args({ permissions: 'edits' }).slice(-2), ['--permission-mode', 'acceptEdits']);
+  assert.ok(AGENTS.claude.args({ permissions: 'bypass' }).includes('--dangerously-skip-permissions'));
+  assert.ok(!AGENTS.claude.args({ permissions: 'default' }).includes('--dangerously-skip-permissions'));
+  assert.ok(AGENTS.codex.args({ permissions: 'edits' }).includes('workspace-write'));
+  assert.ok(AGENTS.gemini.args({ permissions: 'edits', prompt: 'p' }).includes('auto_edit'));
+  assert.throws(() => normalizeConfig({ permissions: 'sometimes' }), /permissions must be/);
+});
+
+test('agent-controlled text never reaches a shell: commit messages and file names with backticks and $(...)', async () => {
+  const dir = tmpdir();
+  gitInit(dir);
+  fs.mkdirSync(path.join(dir, 'test'));
+  fs.writeFileSync(path.join(dir, 'test', 'a`b$(touch pwned-restore).js'), 'keep');
+  execSync('git add -A && git commit -qm base', { cwd: dir, env: { ...process.env, ...gitEnv } });
+  writeLoop(dir, { agent: 'fake', protect: ['test/**'], git: true, max: 2 }, 'x');
+  const letter = 'Implemented `greet(name)` and ran $(touch pwned-commit); see `README.md`';
+  const r = await run(dir, scenario([{ write: { 'test/a`b$(touch pwned-restore).js': 'hacked', 'src.js': 'ok' }, letter, done: true }, { write: { 'src.js': 'v2' }, letter, done: true }]));
+  assert.equal(r.code, 0, r.out);
+  assert.ok(!fs.existsSync(path.join(dir, 'pwned-commit')), 'commit message was executed by a shell');
+  assert.ok(!fs.existsSync(path.join(dir, 'pwned-restore')), 'file name was executed by a shell');
+  assert.equal(fs.readFileSync(path.join(dir, 'test', 'a`b$(touch pwned-restore).js'), 'utf8'), 'keep');
+  assert.match(gitLog(dir), /Implemented `greet\(name\)` and ran \$\(touch pwned-commit\)/);
+  assert.match(r.out, /git: committed/);
+});

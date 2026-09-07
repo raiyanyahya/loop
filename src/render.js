@@ -55,7 +55,8 @@ export const ui = {
  * Renders an agent's live output and collects the text we need afterwards.
  * mode 'claude' understands stream-json; anything else is treated as plain text.
  */
-export function createRenderer({ mode, quiet, onAuthFailure }) {
+export function createRenderer({ mode, quiet, onAuthFailure, cwd }) {
+  const rel = (s) => (cwd && typeof s === 'string' ? s.split(cwd + '/').join('').split(cwd).join('.') : s);
   let buf = '';
   let text = ''; // the agent's own words (protocol is parsed from this)
   let all = ''; // everything, saved to output.txt
@@ -93,7 +94,7 @@ export function createRenderer({ mode, quiet, onAuthFailure }) {
           if (!quiet) for (const line of block.text.split('\n')) if (line.trim()) ui.agentLine(line);
         } else if (block.type === 'tool_use') {
           toolCalls++;
-          if (!quiet) ui.tool(block.name, summarizeToolInput(block.name, block.input));
+          if (!quiet) ui.tool(block.name, rel(summarizeToolInput(block.name, block.input)));
         }
       }
       return;
@@ -105,7 +106,7 @@ export function createRenderer({ mode, quiet, onAuthFailure }) {
       if (!text.trim() && typeof ev.result === 'string') text = ev.result + '\n';
       return;
     }
-    if (ev.type === 'rate_limit_event' && ev.rate_limit_info && ev.rate_limit_info.status && ev.rate_limit_info.status !== 'allowed') {
+    if (ev.type === 'rate_limit_event' && ev.rate_limit_info && ev.rate_limit_info.status && !String(ev.rate_limit_info.status).startsWith('allowed')) {
       if (!quiet) ui.agentLine(`⚠ rate limit: ${ev.rate_limit_info.status}`, { dim: true });
     }
   };

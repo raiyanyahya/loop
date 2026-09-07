@@ -1,94 +1,166 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="510" viewBox="0 0 760 510" role="img" aria-label="A loop run, replayed: iteration 3 of 25 on claude. The agent finishes the README and declares done, the check passes, git commits, the critic approves, verdict done.">
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="864" viewBox="0 0 800 864" role="img" aria-label="A real loop run, replayed: Claude Haiku builds a greeting library over three iterations. Iteration 1 claims done and is rejected with two checklist items open; iteration 3 finishes, the check passes, git commits, the critic approves, verdict done. 2m13s, $0.23.">
 <title>loop run, replayed</title>
-<style>text{font-family:'SF Mono','Cascadia Code','JetBrains Mono','Fira Code',Menlo,Consolas,'DejaVu Sans Mono',monospace;font-size:13px;white-space:pre}
-.l0{opacity:0;animation:a0 15800ms linear infinite}@keyframes a0{0%{opacity:0}3.797%{opacity:0}3.807%{opacity:1}100%{opacity:1}}
-.c0{opacity:0;animation:c0 15800ms linear infinite}@keyframes c0{0%{opacity:0}0.000%{opacity:0}0.010%{opacity:1}3.797%{opacity:1}3.807%{opacity:0}100%{opacity:0}}
-.l1{opacity:0;animation:a1 15800ms linear infinite}@keyframes a1{0%{opacity:0}5.063%{opacity:0}5.073%{opacity:1}100%{opacity:1}}
-.c1{opacity:0;animation:c1 15800ms linear infinite}@keyframes c1{0%{opacity:0}3.797%{opacity:0}3.807%{opacity:1}5.063%{opacity:1}5.073%{opacity:0}100%{opacity:0}}
-.l2{opacity:0;animation:a2 15800ms linear infinite}@keyframes a2{0%{opacity:0}9.494%{opacity:0}9.504%{opacity:1}100%{opacity:1}}
-.c2{opacity:0;animation:c2 15800ms linear infinite}@keyframes c2{0%{opacity:0}5.063%{opacity:0}5.073%{opacity:1}9.494%{opacity:1}9.504%{opacity:0}100%{opacity:0}}
-.l3{opacity:0;animation:a3 15800ms linear infinite}@keyframes a3{0%{opacity:0}12.658%{opacity:0}12.668%{opacity:1}100%{opacity:1}}
-.c3{opacity:0;animation:c3 15800ms linear infinite}@keyframes c3{0%{opacity:0}9.494%{opacity:0}9.504%{opacity:1}12.658%{opacity:1}12.668%{opacity:0}100%{opacity:0}}
-.l4{opacity:0;animation:a4 15800ms linear infinite}@keyframes a4{0%{opacity:0}15.823%{opacity:0}15.833%{opacity:1}100%{opacity:1}}
-.c4{opacity:0;animation:c4 15800ms linear infinite}@keyframes c4{0%{opacity:0}12.658%{opacity:0}12.668%{opacity:1}15.823%{opacity:1}15.833%{opacity:0}100%{opacity:0}}
-.l5{opacity:0;animation:a5 15800ms linear infinite}@keyframes a5{0%{opacity:0}20.253%{opacity:0}20.263%{opacity:1}100%{opacity:1}}
-.c5{opacity:0;animation:c5 15800ms linear infinite}@keyframes c5{0%{opacity:0}15.823%{opacity:0}15.833%{opacity:1}20.253%{opacity:1}20.263%{opacity:0}100%{opacity:0}}
-.l6{opacity:0;animation:a6 15800ms linear infinite}@keyframes a6{0%{opacity:0}24.684%{opacity:0}24.694%{opacity:1}100%{opacity:1}}
-.c6{opacity:0;animation:c6 15800ms linear infinite}@keyframes c6{0%{opacity:0}20.253%{opacity:0}20.263%{opacity:1}24.684%{opacity:1}24.694%{opacity:0}100%{opacity:0}}
-.l7{opacity:0;animation:a7 15800ms linear infinite}@keyframes a7{0%{opacity:0}29.747%{opacity:0}29.757%{opacity:1}100%{opacity:1}}
-.c7{opacity:0;animation:c7 15800ms linear infinite}@keyframes c7{0%{opacity:0}24.684%{opacity:0}24.694%{opacity:1}29.747%{opacity:1}29.757%{opacity:0}100%{opacity:0}}
-.l8{opacity:0;animation:a8 15800ms linear infinite}@keyframes a8{0%{opacity:0}33.544%{opacity:0}33.554%{opacity:1}100%{opacity:1}}
-.c8{opacity:0;animation:c8 15800ms linear infinite}@keyframes c8{0%{opacity:0}29.747%{opacity:0}29.757%{opacity:1}33.544%{opacity:1}33.554%{opacity:0}100%{opacity:0}}
-.l9{opacity:0;animation:a9 15800ms linear infinite}@keyframes a9{0%{opacity:0}37.342%{opacity:0}37.352%{opacity:1}100%{opacity:1}}
-.c9{opacity:0;animation:c9 15800ms linear infinite}@keyframes c9{0%{opacity:0}33.544%{opacity:0}33.554%{opacity:1}37.342%{opacity:1}37.352%{opacity:0}100%{opacity:0}}
-.l10{opacity:0;animation:a10 15800ms linear infinite}@keyframes a10{0%{opacity:0}41.772%{opacity:0}41.782%{opacity:1}100%{opacity:1}}
-.c10{opacity:0;animation:c10 15800ms linear infinite}@keyframes c10{0%{opacity:0}37.342%{opacity:0}37.352%{opacity:1}41.772%{opacity:1}41.782%{opacity:0}100%{opacity:0}}
-.l11{opacity:0;animation:a11 15800ms linear infinite}@keyframes a11{0%{opacity:0}45.570%{opacity:0}45.580%{opacity:1}100%{opacity:1}}
-.c11{opacity:0;animation:c11 15800ms linear infinite}@keyframes c11{0%{opacity:0}41.772%{opacity:0}41.782%{opacity:1}45.570%{opacity:1}45.580%{opacity:0}100%{opacity:0}}
-.l12{opacity:0;animation:a12 15800ms linear infinite}@keyframes a12{0%{opacity:0}50.000%{opacity:0}50.010%{opacity:1}100%{opacity:1}}
-.c12{opacity:0;animation:c12 15800ms linear infinite}@keyframes c12{0%{opacity:0}45.570%{opacity:0}45.580%{opacity:1}50.000%{opacity:1}50.010%{opacity:0}100%{opacity:0}}
-.l13{opacity:0;animation:a13 15800ms linear infinite}@keyframes a13{0%{opacity:0}52.848%{opacity:0}52.858%{opacity:1}100%{opacity:1}}
-.c13{opacity:0;animation:c13 15800ms linear infinite}@keyframes c13{0%{opacity:0}50.000%{opacity:0}50.010%{opacity:1}52.848%{opacity:1}52.858%{opacity:0}100%{opacity:0}}
-.l14{opacity:0;animation:a14 15800ms linear infinite}@keyframes a14{0%{opacity:0}55.696%{opacity:0}55.706%{opacity:1}100%{opacity:1}}
-.c14{opacity:0;animation:c14 15800ms linear infinite}@keyframes c14{0%{opacity:0}52.848%{opacity:0}52.858%{opacity:1}55.696%{opacity:1}55.706%{opacity:0}100%{opacity:0}}
-.l15{opacity:0;animation:a15 15800ms linear infinite}@keyframes a15{0%{opacity:0}60.759%{opacity:0}60.769%{opacity:1}100%{opacity:1}}
-.c15{opacity:0;animation:c15 15800ms linear infinite}@keyframes c15{0%{opacity:0}55.696%{opacity:0}55.706%{opacity:1}60.759%{opacity:1}60.769%{opacity:0}100%{opacity:0}}
-.l16{opacity:0;animation:a16 15800ms linear infinite}@keyframes a16{0%{opacity:0}63.924%{opacity:0}63.934%{opacity:1}100%{opacity:1}}
-.c16{opacity:0;animation:c16 15800ms linear infinite}@keyframes c16{0%{opacity:0}60.759%{opacity:0}60.769%{opacity:1}63.924%{opacity:1}63.934%{opacity:0}100%{opacity:0}}
-.l17{opacity:0;animation:a17 15800ms linear infinite}@keyframes a17{0%{opacity:0}68.987%{opacity:0}68.997%{opacity:1}100%{opacity:1}}
-.c17{opacity:0;animation:c17 15800ms linear infinite}@keyframes c17{0%{opacity:0}63.924%{opacity:0}63.934%{opacity:1}68.987%{opacity:1}68.997%{opacity:0}100%{opacity:0}}
-.l18{opacity:0;animation:a18 15800ms linear infinite}@keyframes a18{0%{opacity:0}70.886%{opacity:0}70.896%{opacity:1}100%{opacity:1}}
-.c18{opacity:0;animation:c18 15800ms linear infinite}@keyframes c18{0%{opacity:0}68.987%{opacity:0}68.997%{opacity:1}70.886%{opacity:1}70.896%{opacity:0}100%{opacity:0}}
-.l19{opacity:0;animation:a19 15800ms linear infinite}@keyframes a19{0%{opacity:0}74.684%{opacity:0}74.694%{opacity:1}100%{opacity:1}}
-.c19{opacity:0;animation:c19 15800ms linear infinite}@keyframes c19{0%{opacity:0}70.886%{opacity:0}70.896%{opacity:1}74.684%{opacity:1}74.694%{opacity:0}100%{opacity:0}}
+<style>text{font-family:'SF Mono','Cascadia Code','JetBrains Mono','Fira Code',Menlo,Consolas,'DejaVu Sans Mono',monospace;font-size:12.5px;white-space:pre}
+.l0{opacity:0;animation:a0 26200ms linear infinite}@keyframes a0{0%{opacity:0}1.908%{opacity:0}1.918%{opacity:1}100%{opacity:1}}
+.c0{opacity:0;animation:c0 26200ms linear infinite}@keyframes c0{0%{opacity:0}0.000%{opacity:0}0.010%{opacity:1}1.908%{opacity:1}1.918%{opacity:0}100%{opacity:0}}
+.l1{opacity:0;animation:a1 26200ms linear infinite}@keyframes a1{0%{opacity:0}2.481%{opacity:0}2.491%{opacity:1}100%{opacity:1}}
+.c1{opacity:0;animation:c1 26200ms linear infinite}@keyframes c1{0%{opacity:0}1.908%{opacity:0}1.918%{opacity:1}2.481%{opacity:1}2.491%{opacity:0}100%{opacity:0}}
+.l2{opacity:0;animation:a2 26200ms linear infinite}@keyframes a2{0%{opacity:0}4.771%{opacity:0}4.781%{opacity:1}100%{opacity:1}}
+.c2{opacity:0;animation:c2 26200ms linear infinite}@keyframes c2{0%{opacity:0}2.481%{opacity:0}2.491%{opacity:1}4.771%{opacity:1}4.781%{opacity:0}100%{opacity:0}}
+.l3{opacity:0;animation:a3 26200ms linear infinite}@keyframes a3{0%{opacity:0}7.443%{opacity:0}7.453%{opacity:1}100%{opacity:1}}
+.c3{opacity:0;animation:c3 26200ms linear infinite}@keyframes c3{0%{opacity:0}4.771%{opacity:0}4.781%{opacity:1}7.443%{opacity:1}7.453%{opacity:0}100%{opacity:0}}
+.l4{opacity:0;animation:a4 26200ms linear infinite}@keyframes a4{0%{opacity:0}9.733%{opacity:0}9.743%{opacity:1}100%{opacity:1}}
+.c4{opacity:0;animation:c4 26200ms linear infinite}@keyframes c4{0%{opacity:0}7.443%{opacity:0}7.453%{opacity:1}9.733%{opacity:1}9.743%{opacity:0}100%{opacity:0}}
+.l5{opacity:0;animation:a5 26200ms linear infinite}@keyframes a5{0%{opacity:0}12.405%{opacity:0}12.415%{opacity:1}100%{opacity:1}}
+.c5{opacity:0;animation:c5 26200ms linear infinite}@keyframes c5{0%{opacity:0}9.733%{opacity:0}9.743%{opacity:1}12.405%{opacity:1}12.415%{opacity:0}100%{opacity:0}}
+.l6{opacity:0;animation:a6 26200ms linear infinite}@keyframes a6{0%{opacity:0}14.695%{opacity:0}14.705%{opacity:1}100%{opacity:1}}
+.c6{opacity:0;animation:c6 26200ms linear infinite}@keyframes c6{0%{opacity:0}12.405%{opacity:0}12.415%{opacity:1}14.695%{opacity:1}14.705%{opacity:0}100%{opacity:0}}
+.l7{opacity:0;animation:a7 26200ms linear infinite}@keyframes a7{0%{opacity:0}16.985%{opacity:0}16.995%{opacity:1}100%{opacity:1}}
+.c7{opacity:0;animation:c7 26200ms linear infinite}@keyframes c7{0%{opacity:0}14.695%{opacity:0}14.705%{opacity:1}16.985%{opacity:1}16.995%{opacity:0}100%{opacity:0}}
+.l8{opacity:0;animation:a8 26200ms linear infinite}@keyframes a8{0%{opacity:0}19.656%{opacity:0}19.666%{opacity:1}100%{opacity:1}}
+.c8{opacity:0;animation:c8 26200ms linear infinite}@keyframes c8{0%{opacity:0}16.985%{opacity:0}16.995%{opacity:1}19.656%{opacity:1}19.666%{opacity:0}100%{opacity:0}}
+.l9{opacity:0;animation:a9 26200ms linear infinite}@keyframes a9{0%{opacity:0}22.328%{opacity:0}22.338%{opacity:1}100%{opacity:1}}
+.c9{opacity:0;animation:c9 26200ms linear infinite}@keyframes c9{0%{opacity:0}19.656%{opacity:0}19.666%{opacity:1}22.328%{opacity:1}22.338%{opacity:0}100%{opacity:0}}
+.l10{opacity:0;animation:a10 26200ms linear infinite}@keyframes a10{0%{opacity:0}24.237%{opacity:0}24.247%{opacity:1}100%{opacity:1}}
+.c10{opacity:0;animation:c10 26200ms linear infinite}@keyframes c10{0%{opacity:0}22.328%{opacity:0}22.338%{opacity:1}24.237%{opacity:1}24.247%{opacity:0}100%{opacity:0}}
+.l11{opacity:0;animation:a11 26200ms linear infinite}@keyframes a11{0%{opacity:0}26.145%{opacity:0}26.155%{opacity:1}100%{opacity:1}}
+.c11{opacity:0;animation:c11 26200ms linear infinite}@keyframes c11{0%{opacity:0}24.237%{opacity:0}24.247%{opacity:1}26.145%{opacity:1}26.155%{opacity:0}100%{opacity:0}}
+.l12{opacity:0;animation:a12 26200ms linear infinite}@keyframes a12{0%{opacity:0}28.435%{opacity:0}28.445%{opacity:1}100%{opacity:1}}
+.c12{opacity:0;animation:c12 26200ms linear infinite}@keyframes c12{0%{opacity:0}26.145%{opacity:0}26.155%{opacity:1}28.435%{opacity:1}28.445%{opacity:0}100%{opacity:0}}
+.l13{opacity:0;animation:a13 26200ms linear infinite}@keyframes a13{0%{opacity:0}30.344%{opacity:0}30.354%{opacity:1}100%{opacity:1}}
+.c13{opacity:0;animation:c13 26200ms linear infinite}@keyframes c13{0%{opacity:0}28.435%{opacity:0}28.445%{opacity:1}30.344%{opacity:1}30.354%{opacity:0}100%{opacity:0}}
+.l14{opacity:0;animation:a14 26200ms linear infinite}@keyframes a14{0%{opacity:0}33.779%{opacity:0}33.789%{opacity:1}100%{opacity:1}}
+.c14{opacity:0;animation:c14 26200ms linear infinite}@keyframes c14{0%{opacity:0}30.344%{opacity:0}30.354%{opacity:1}33.779%{opacity:1}33.789%{opacity:0}100%{opacity:0}}
+.l15{opacity:0;animation:a15 26200ms linear infinite}@keyframes a15{0%{opacity:0}34.542%{opacity:0}34.552%{opacity:1}100%{opacity:1}}
+.c15{opacity:0;animation:c15 26200ms linear infinite}@keyframes c15{0%{opacity:0}33.779%{opacity:0}33.789%{opacity:1}34.542%{opacity:1}34.552%{opacity:0}100%{opacity:0}}
+.l16{opacity:0;animation:a16 26200ms linear infinite}@keyframes a16{0%{opacity:0}37.977%{opacity:0}37.987%{opacity:1}100%{opacity:1}}
+.c16{opacity:0;animation:c16 26200ms linear infinite}@keyframes c16{0%{opacity:0}34.542%{opacity:0}34.552%{opacity:1}37.977%{opacity:1}37.987%{opacity:0}100%{opacity:0}}
+.l17{opacity:0;animation:a17 26200ms linear infinite}@keyframes a17{0%{opacity:0}38.740%{opacity:0}38.750%{opacity:1}100%{opacity:1}}
+.c17{opacity:0;animation:c17 26200ms linear infinite}@keyframes c17{0%{opacity:0}37.977%{opacity:0}37.987%{opacity:1}38.740%{opacity:1}38.750%{opacity:0}100%{opacity:0}}
+.l18{opacity:0;animation:a18 26200ms linear infinite}@keyframes a18{0%{opacity:0}40.649%{opacity:0}40.659%{opacity:1}100%{opacity:1}}
+.c18{opacity:0;animation:c18 26200ms linear infinite}@keyframes c18{0%{opacity:0}38.740%{opacity:0}38.750%{opacity:1}40.649%{opacity:1}40.659%{opacity:0}100%{opacity:0}}
+.l19{opacity:0;animation:a19 26200ms linear infinite}@keyframes a19{0%{opacity:0}41.221%{opacity:0}41.231%{opacity:1}100%{opacity:1}}
+.c19{opacity:0;animation:c19 26200ms linear infinite}@keyframes c19{0%{opacity:0}40.649%{opacity:0}40.659%{opacity:1}41.221%{opacity:1}41.231%{opacity:0}100%{opacity:0}}
+.l20{opacity:0;animation:a20 26200ms linear infinite}@keyframes a20{0%{opacity:0}43.511%{opacity:0}43.521%{opacity:1}100%{opacity:1}}
+.c20{opacity:0;animation:c20 26200ms linear infinite}@keyframes c20{0%{opacity:0}41.221%{opacity:0}41.231%{opacity:1}43.511%{opacity:1}43.521%{opacity:0}100%{opacity:0}}
+.l21{opacity:0;animation:a21 26200ms linear infinite}@keyframes a21{0%{opacity:0}46.183%{opacity:0}46.193%{opacity:1}100%{opacity:1}}
+.c21{opacity:0;animation:c21 26200ms linear infinite}@keyframes c21{0%{opacity:0}43.511%{opacity:0}43.521%{opacity:1}46.183%{opacity:1}46.193%{opacity:0}100%{opacity:0}}
+.l22{opacity:0;animation:a22 26200ms linear infinite}@keyframes a22{0%{opacity:0}48.473%{opacity:0}48.483%{opacity:1}100%{opacity:1}}
+.c22{opacity:0;animation:c22 26200ms linear infinite}@keyframes c22{0%{opacity:0}46.183%{opacity:0}46.193%{opacity:1}48.473%{opacity:1}48.483%{opacity:0}100%{opacity:0}}
+.l23{opacity:0;animation:a23 26200ms linear infinite}@keyframes a23{0%{opacity:0}51.145%{opacity:0}51.155%{opacity:1}100%{opacity:1}}
+.c23{opacity:0;animation:c23 26200ms linear infinite}@keyframes c23{0%{opacity:0}48.473%{opacity:0}48.483%{opacity:1}51.145%{opacity:1}51.155%{opacity:0}100%{opacity:0}}
+.l24{opacity:0;animation:a24 26200ms linear infinite}@keyframes a24{0%{opacity:0}53.435%{opacity:0}53.445%{opacity:1}100%{opacity:1}}
+.c24{opacity:0;animation:c24 26200ms linear infinite}@keyframes c24{0%{opacity:0}51.145%{opacity:0}51.155%{opacity:1}53.435%{opacity:1}53.445%{opacity:0}100%{opacity:0}}
+.l25{opacity:0;animation:a25 26200ms linear infinite}@keyframes a25{0%{opacity:0}56.107%{opacity:0}56.117%{opacity:1}100%{opacity:1}}
+.c25{opacity:0;animation:c25 26200ms linear infinite}@keyframes c25{0%{opacity:0}53.435%{opacity:0}53.445%{opacity:1}56.107%{opacity:1}56.117%{opacity:0}100%{opacity:0}}
+.l26{opacity:0;animation:a26 26200ms linear infinite}@keyframes a26{0%{opacity:0}58.015%{opacity:0}58.025%{opacity:1}100%{opacity:1}}
+.c26{opacity:0;animation:c26 26200ms linear infinite}@keyframes c26{0%{opacity:0}56.107%{opacity:0}56.117%{opacity:1}58.015%{opacity:1}58.025%{opacity:0}100%{opacity:0}}
+.l27{opacity:0;animation:a27 26200ms linear infinite}@keyframes a27{0%{opacity:0}60.305%{opacity:0}60.315%{opacity:1}100%{opacity:1}}
+.c27{opacity:0;animation:c27 26200ms linear infinite}@keyframes c27{0%{opacity:0}58.015%{opacity:0}58.025%{opacity:1}60.305%{opacity:1}60.315%{opacity:0}100%{opacity:0}}
+.l28{opacity:0;animation:a28 26200ms linear infinite}@keyframes a28{0%{opacity:0}62.214%{opacity:0}62.224%{opacity:1}100%{opacity:1}}
+.c28{opacity:0;animation:c28 26200ms linear infinite}@keyframes c28{0%{opacity:0}60.305%{opacity:0}60.315%{opacity:1}62.214%{opacity:1}62.224%{opacity:0}100%{opacity:0}}
+.l29{opacity:0;animation:a29 26200ms linear infinite}@keyframes a29{0%{opacity:0}64.885%{opacity:0}64.895%{opacity:1}100%{opacity:1}}
+.c29{opacity:0;animation:c29 26200ms linear infinite}@keyframes c29{0%{opacity:0}62.214%{opacity:0}62.224%{opacity:1}64.885%{opacity:1}64.895%{opacity:0}100%{opacity:0}}
+.l30{opacity:0;animation:a30 26200ms linear infinite}@keyframes a30{0%{opacity:0}67.557%{opacity:0}67.567%{opacity:1}100%{opacity:1}}
+.c30{opacity:0;animation:c30 26200ms linear infinite}@keyframes c30{0%{opacity:0}64.885%{opacity:0}64.895%{opacity:1}67.557%{opacity:1}67.567%{opacity:0}100%{opacity:0}}
+.l31{opacity:0;animation:a31 26200ms linear infinite}@keyframes a31{0%{opacity:0}69.466%{opacity:0}69.476%{opacity:1}100%{opacity:1}}
+.c31{opacity:0;animation:c31 26200ms linear infinite}@keyframes c31{0%{opacity:0}67.557%{opacity:0}67.567%{opacity:1}69.466%{opacity:1}69.476%{opacity:0}100%{opacity:0}}
+.l32{opacity:0;animation:a32 26200ms linear infinite}@keyframes a32{0%{opacity:0}71.374%{opacity:0}71.384%{opacity:1}100%{opacity:1}}
+.c32{opacity:0;animation:c32 26200ms linear infinite}@keyframes c32{0%{opacity:0}69.466%{opacity:0}69.476%{opacity:1}71.374%{opacity:1}71.384%{opacity:0}100%{opacity:0}}
+.l33{opacity:0;animation:a33 26200ms linear infinite}@keyframes a33{0%{opacity:0}74.427%{opacity:0}74.437%{opacity:1}100%{opacity:1}}
+.c33{opacity:0;animation:c33 26200ms linear infinite}@keyframes c33{0%{opacity:0}71.374%{opacity:0}71.384%{opacity:1}74.427%{opacity:1}74.437%{opacity:0}100%{opacity:0}}
+.l34{opacity:0;animation:a34 26200ms linear infinite}@keyframes a34{0%{opacity:0}76.336%{opacity:0}76.346%{opacity:1}100%{opacity:1}}
+.c34{opacity:0;animation:c34 26200ms linear infinite}@keyframes c34{0%{opacity:0}74.427%{opacity:0}74.437%{opacity:1}76.336%{opacity:1}76.346%{opacity:0}100%{opacity:0}}
+.l35{opacity:0;animation:a35 26200ms linear infinite}@keyframes a35{0%{opacity:0}79.389%{opacity:0}79.399%{opacity:1}100%{opacity:1}}
+.c35{opacity:0;animation:c35 26200ms linear infinite}@keyframes c35{0%{opacity:0}76.336%{opacity:0}76.346%{opacity:1}79.389%{opacity:1}79.399%{opacity:0}100%{opacity:0}}
+.l36{opacity:0;animation:a36 26200ms linear infinite}@keyframes a36{0%{opacity:0}80.534%{opacity:0}80.544%{opacity:1}100%{opacity:1}}
+.c36{opacity:0;animation:c36 26200ms linear infinite}@keyframes c36{0%{opacity:0}79.389%{opacity:0}79.399%{opacity:1}80.534%{opacity:1}80.544%{opacity:0}100%{opacity:0}}
+.l37{opacity:0;animation:a37 26200ms linear infinite}@keyframes a37{0%{opacity:0}82.824%{opacity:0}82.834%{opacity:1}100%{opacity:1}}
+.c37{opacity:0;animation:c37 26200ms linear infinite}@keyframes c37{0%{opacity:0}80.534%{opacity:0}80.544%{opacity:1}82.824%{opacity:1}82.834%{opacity:0}100%{opacity:0}}
 .blink{animation:blink 1s step-end infinite}@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
 </style>
-<defs><clipPath id="win"><rect width="760" height="510" rx="10"/></clipPath></defs>
+<defs><clipPath id="win"><rect width="800" height="864" rx="10"/></clipPath></defs>
 <g clip-path="url(#win)">
-  <rect width="760" height="510" fill="#1e2127"/>
-  <rect width="760" height="34" fill="#2c313a"/>
+  <rect width="800" height="864" fill="#1e2127"/>
+  <rect width="800" height="34" fill="#2c313a"/>
   <circle cx="20" cy="17" r="6" fill="#ff5f57"/><circle cx="40" cy="17" r="6" fill="#febc2e"/><circle cx="60" cy="17" r="6" fill="#28c840"/>
-  <text x="380" y="21.5" text-anchor="middle" fill="#6b7280" font-size="12">⟲ loop</text>
-<text class="l0" x="20" y="63" xml:space="preserve"><tspan fill="#56b6c2">─── iteration 3/25 </tspan><tspan fill="#6b7280">──────────────────────────────</tspan><tspan fill="#56b6c2"> claude · 1m33s · $0.20 ───</tspan></text>
-<g class="c0"><rect class="blink" x="20" y="51" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l1" x="20" y="85" xml:space="preserve"><tspan fill="#c8ccd4"> </tspan></text>
-<g class="c1"><rect class="blink" x="20" y="73" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l2" x="20" y="107" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#eef0f3" font-weight="600">claude</tspan><tspan fill="#6b7280"> (claude -p --output-format stream-json ...)</tspan></text>
-<g class="c2"><rect class="blink" x="20" y="95" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l3" x="20" y="129" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">The loop rejected my "done": the README item is still open.</tspan></text>
-<g class="c3"><rect class="blink" x="20" y="117" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l4" x="20" y="151" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">Writing it now.</tspan></text>
-<g class="c4"><rect class="blink" x="20" y="139" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l5" x="20" y="173" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Write</tspan><tspan fill="#6b7280">  README.md</tspan></text>
-<g class="c5"><rect class="blink" x="20" y="161" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l6" x="20" y="195" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Edit</tspan><tspan fill="#6b7280">  LOOP.md</tspan></text>
-<g class="c6"><rect class="blink" x="20" y="183" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l7" x="20" y="217" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c678dd">&lt;loop:done/&gt;</tspan></text>
-<g class="c7"><rect class="blink" x="20" y="205" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l8" x="20" y="239" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">2 files changed, 41s, $0.09, 3 tool calls</tspan><tspan fill="#6b7280">  LOOP.md, README.md</tspan></text>
-<g class="c8"><rect class="blink" x="20" y="227" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l9" x="20" y="261" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">letter: </tspan><tspan fill="#6b7280">Wrote README.md and ticked the last item.</tspan></text>
-<g class="c9"><rect class="blink" x="20" y="249" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l10" x="20" y="283" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">check: </tspan><tspan fill="#6b7280">node test.js</tspan><tspan fill="#c8ccd4"> -&gt; </tspan><tspan fill="#98c379">pass</tspan><tspan fill="#6b7280"> (30ms)</tspan></text>
-<g class="c10"><rect class="blink" x="20" y="271" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l11" x="20" y="305" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">git: committed 06c6eae</tspan></text>
-<g class="c11"><rect class="blink" x="20" y="293" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l12" x="20" y="327" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#eef0f3" font-weight="600">critic</tspan><tspan fill="#6b7280"> (claude)</tspan></text>
-<g class="c12"><rect class="blink" x="20" y="315" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l13" x="20" y="349" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">Read the diff against the goal. Tests cover both functions;</tspan></text>
-<g class="c13"><rect class="blink" x="20" y="337" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l14" x="20" y="371" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">README matches. No stubs.</tspan></text>
-<g class="c14"><rect class="blink" x="20" y="359" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l15" x="20" y="393" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c678dd">&lt;loop:approve/&gt;</tspan></text>
-<g class="c15"><rect class="blink" x="20" y="381" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l16" x="20" y="415" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">critic: </tspan><tspan fill="#98c379">approved</tspan></text>
-<g class="c16"><rect class="blink" x="20" y="403" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l17" x="20" y="437" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">verdict: </tspan><tspan fill="#98c379">done</tspan><tspan fill="#6b7280">  verified and approved</tspan></text>
-<g class="c17"><rect class="blink" x="20" y="425" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l18" x="20" y="459" xml:space="preserve"><tspan fill="#c8ccd4"> </tspan></text>
-<g class="c18"><rect class="blink" x="20" y="447" width="8" height="16" fill="#c8ccd4"/></g>
-<text class="l19" x="20" y="481" xml:space="preserve"><tspan fill="#98c379" font-weight="600">✓ done after 3 iterations, 2m14s, $0.29</tspan></text>
-<g class="c19"><rect class="blink" x="20" y="469" width="8" height="16" fill="#c8ccd4"/></g>
+  <text x="400" y="21.5" text-anchor="middle" fill="#6b7280" font-size="12">greet-lib — loop run</text>
+<text class="l0" x="20" y="60.5" xml:space="preserve"><tspan fill="#56b6c2">─── iteration 1/5 </tspan><tspan fill="#6b7280">───────────────────────────────</tspan><tspan fill="#56b6c2"> claude · 0s ───</tspan></text>
+<g class="c0"><rect class="blink" x="20" y="49" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l1" x="20" y="81.5" xml:space="preserve"><tspan fill="#c8ccd4"> </tspan></text>
+<g class="c1"><rect class="blink" x="20" y="70" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l2" x="20" y="102.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#eef0f3" font-weight="600">claude</tspan><tspan fill="#6b7280"> / claude-haiku-4-5-20251001</tspan></text>
+<g class="c2"><rect class="blink" x="20" y="91" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l3" x="20" y="123.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">I'll start fresh on this greeting library. First, let me read the test spec.</tspan></text>
+<g class="c3"><rect class="blink" x="20" y="112" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l4" x="20" y="144.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Read</tspan><tspan fill="#6b7280">  test.js</tspan></text>
+<g class="c4"><rect class="blink" x="20" y="133" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l5" x="20" y="165.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Write</tspan><tspan fill="#6b7280">  greet.js</tspan></text>
+<g class="c5"><rect class="blink" x="20" y="154" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l6" x="20" y="186.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Edit</tspan><tspan fill="#6b7280">  LOOP.md</tspan></text>
+<g class="c6"><rect class="blink" x="20" y="175" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l7" x="20" y="207.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Write</tspan><tspan fill="#6b7280">  .loop/letter.md</tspan></text>
+<g class="c7"><rect class="blink" x="20" y="196" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l8" x="20" y="228.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">Done! I've implemented greet(name). The next iteration can tick the second item and write the README.</tspan></text>
+<g class="c8"><rect class="blink" x="20" y="217" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l9" x="20" y="249.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c678dd">&lt;loop:done/&gt;</tspan></text>
+<g class="c9"><rect class="blink" x="20" y="238" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l10" x="20" y="270.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">2 files changed, 46s, $0.07, 7 tool calls</tspan><tspan fill="#6b7280">  LOOP.md, greet.js</tspan></text>
+<g class="c10"><rect class="blink" x="20" y="259" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l11" x="20" y="291.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">letter: </tspan><tspan fill="#6b7280">Created `greet.js` as an ES module with two exported functions:</tspan></text>
+<g class="c11"><rect class="blink" x="20" y="280" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l12" x="20" y="312.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">check: </tspan><tspan fill="#6b7280">node test.js</tspan><tspan fill="#c8ccd4"> -&gt; </tspan><tspan fill="#98c379">pass</tspan><tspan fill="#6b7280"> (26ms)</tspan></text>
+<g class="c12"><rect class="blink" x="20" y="301" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l13" x="20" y="333.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">git: committed 15af07a</tspan></text>
+<g class="c13"><rect class="blink" x="20" y="322" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l14" x="20" y="354.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">verdict: </tspan><tspan fill="#56b6c2">continue</tspan><tspan fill="#6b7280">  done rejected: 2 checklist items still open</tspan></text>
+<g class="c14"><rect class="blink" x="20" y="343" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l15" x="20" y="375.5" xml:space="preserve"><tspan fill="#c8ccd4"> </tspan></text>
+<g class="c15"><rect class="blink" x="20" y="364" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l16" x="20" y="396.5" xml:space="preserve"><tspan fill="#6b7280">… iteration 2: verified and ticked shout(s), check pass, committed bd2b02d, 1 item still open …</tspan></text>
+<g class="c16"><rect class="blink" x="20" y="385" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l17" x="20" y="417.5" xml:space="preserve"><tspan fill="#c8ccd4"> </tspan></text>
+<g class="c17"><rect class="blink" x="20" y="406" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l18" x="20" y="438.5" xml:space="preserve"><tspan fill="#56b6c2">─── iteration 3/5 </tspan><tspan fill="#6b7280">───────────────────────────</tspan><tspan fill="#56b6c2"> claude · 1m23s · $0.13 ───</tspan></text>
+<g class="c18"><rect class="blink" x="20" y="427" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l19" x="20" y="459.5" xml:space="preserve"><tspan fill="#c8ccd4"> </tspan></text>
+<g class="c19"><rect class="blink" x="20" y="448" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l20" x="20" y="480.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#eef0f3" font-weight="600">claude</tspan><tspan fill="#6b7280"> / claude-haiku-4-5-20251001</tspan></text>
+<g class="c20"><rect class="blink" x="20" y="469" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l21" x="20" y="501.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">Looking at the checklist, I need to write README.md documenting the two functions.</tspan></text>
+<g class="c21"><rect class="blink" x="20" y="490" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l22" x="20" y="522.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Read</tspan><tspan fill="#6b7280">  greet.js</tspan></text>
+<g class="c22"><rect class="blink" x="20" y="511" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l23" x="20" y="543.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Write</tspan><tspan fill="#6b7280">  README.md</tspan></text>
+<g class="c23"><rect class="blink" x="20" y="532" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l24" x="20" y="564.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Edit</tspan><tspan fill="#6b7280">  LOOP.md</tspan></text>
+<g class="c24"><rect class="blink" x="20" y="553" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l25" x="20" y="585.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c678dd">&lt;loop:done/&gt;</tspan></text>
+<g class="c25"><rect class="blink" x="20" y="574" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l26" x="20" y="606.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">2 files changed, 35s, $0.06, 9 tool calls</tspan><tspan fill="#6b7280">  LOOP.md, README.md</tspan></text>
+<g class="c26"><rect class="blink" x="20" y="595" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l27" x="20" y="627.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">check: </tspan><tspan fill="#6b7280">node test.js</tspan><tspan fill="#c8ccd4"> -&gt; </tspan><tspan fill="#98c379">pass</tspan><tspan fill="#6b7280"> (19ms)</tspan></text>
+<g class="c27"><rect class="blink" x="20" y="616" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l28" x="20" y="648.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">git: committed 7748867</tspan></text>
+<g class="c28"><rect class="blink" x="20" y="637" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l29" x="20" y="669.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#eef0f3" font-weight="600">critic</tspan><tspan fill="#6b7280"> (claude)</tspan></text>
+<g class="c29"><rect class="blink" x="20" y="658" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l30" x="20" y="690.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">I'll review this systematically. Let me read the key files to verify the work against the goal.</tspan></text>
+<g class="c30"><rect class="blink" x="20" y="679" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l31" x="20" y="711.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Read</tspan><tspan fill="#6b7280">  greet.js</tspan></text>
+<g class="c31"><rect class="blink" x="20" y="700" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l32" x="20" y="732.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Read</tspan><tspan fill="#6b7280">  README.md</tspan></text>
+<g class="c32"><rect class="blink" x="20" y="721" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l33" x="20" y="753.5" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c678dd">&lt;loop:approve/&gt;</tspan></text>
+<g class="c33"><rect class="blink" x="20" y="742" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l34" x="20" y="774.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">critic: </tspan><tspan fill="#98c379">approved</tspan></text>
+<g class="c34"><rect class="blink" x="20" y="763" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l35" x="20" y="795.5" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">verdict: </tspan><tspan fill="#98c379">done</tspan><tspan fill="#6b7280">  verified and approved</tspan></text>
+<g class="c35"><rect class="blink" x="20" y="784" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l36" x="20" y="816.5" xml:space="preserve"><tspan fill="#c8ccd4"> </tspan></text>
+<g class="c36"><rect class="blink" x="20" y="805" width="8" height="15" fill="#c8ccd4"/></g>
+<text class="l37" x="20" y="837.5" xml:space="preserve"><tspan fill="#98c379" font-weight="600">✓ done after 3 iterations, 2m13s, $0.23</tspan></text>
+<g class="c37"><rect class="blink" x="20" y="826" width="8" height="15" fill="#c8ccd4"/></g>
 </g>
-<rect x="0.5" y="0.5" width="759" height="509" rx="10" fill="none" stroke="#3a3f4b"/>
+<rect x="0.5" y="0.5" width="799" height="863" rx="10" fill="none" stroke="#3a3f4b"/>
 </svg>

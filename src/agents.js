@@ -18,7 +18,7 @@ export const AGENTS = {
     verified: true,
     input: 'stdin',
     parse: 'claude',
-    args: ({ model }) => ['-p', '--output-format', 'stream-json', '--verbose', '--dangerously-skip-permissions', ...(model ? ['--model', model] : [])],
+    args: ({ model, permissions }) => ['-p', '--output-format', 'stream-json', '--verbose', ...(permissions === 'edits' ? ['--permission-mode', 'acceptEdits'] : permissions === 'default' ? [] : ['--dangerously-skip-permissions']), ...(model ? ['--model', model] : [])],
     env: (env) => {
       // Allow loop to be launched from inside a Claude Code session.
       const out = {};
@@ -31,14 +31,14 @@ export const AGENTS = {
     bin: 'codex',
     install: 'npm i -g @openai/codex',
     input: 'stdin',
-    args: ({ model }) => ['exec', '--dangerously-bypass-approvals-and-sandbox', '--skip-git-repo-check', ...(model ? ['-m', model] : []), '-'],
+    args: ({ model, permissions }) => ['exec', ...(permissions === 'edits' ? ['--sandbox', 'workspace-write'] : permissions === 'default' ? [] : ['--dangerously-bypass-approvals-and-sandbox']), '--skip-git-repo-check', ...(model ? ['-m', model] : []), '-'],
   },
   gemini: {
     label: 'Gemini CLI',
     bin: 'gemini',
     install: 'npm i -g @google/gemini-cli',
     input: 'arg',
-    args: ({ model, prompt }) => ['--yolo', ...(model ? ['-m', model] : []), '-p', prompt],
+    args: ({ model, prompt, permissions }) => [...(permissions === 'edits' ? ['--approval-mode', 'auto_edit'] : permissions === 'default' ? [] : ['--yolo']), ...(model ? ['-m', model] : []), '-p', prompt],
   },
   aider: {
     label: 'Aider',
@@ -156,7 +156,7 @@ function buildBare({ agent, cfg, prompt, promptFile, base }) {
   if (!a) throw new Error(`unknown agent "${agent}" (known: ${agentNames().join(', ')}; or set command: in the Loopfile)`);
   const file = agent === 'fake' ? a.bin : agentPath(agent);
   if (!file) throw new Error(`agent "${agent}" is not installed (${a.install})`);
-  const args = [...a.args({ model: cfg.model, prompt, promptFile }), ...cfg.args];
+  const args = [...a.args({ model: cfg.model, prompt, promptFile, permissions: cfg.permissions || 'bypass' }), ...cfg.args];
   const finalEnv = a.env ? a.env(base) : base;
   const display = [a.bin, ...args.map((x) => (x === prompt ? '<prompt>' : x === promptFile ? '<promptfile>' : x))].join(' ');
   return { file, args, input: a.input, stdinText: a.input === 'stdin' ? prompt : null, env: finalEnv, parse: a.parse || null, display };

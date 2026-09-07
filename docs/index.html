@@ -46,7 +46,7 @@
   .comment { margin-top: 10px; font-size: 12px; color: #55a061; }
   .note { margin: 14px 0 0; font-size: 13px; color: #55a061; line-height: 1.7; }
 
-  .term { margin-top: 12px; border: 1px solid #1e4526; background: #060d06; padding: 20px 22px; font-size: 13px; line-height: 1.85; min-height: 380px; }
+  .term { margin-top: 12px; border: 1px solid #1e4526; background: #060d06; padding: 20px 22px; font-size: 13px; line-height: 1.85; min-height: 380px; max-height: 640px; overflow-y: auto; }
   .term .ln { white-space: pre-wrap; word-break: break-word; text-shadow: 0 0 8px rgba(61,255,112,0.25); }
 
   .why { margin: 16px 0 0; font-size: clamp(16px, 2vw, 19px); line-height: 1.8; color: #9fe8a9; }
@@ -126,7 +126,7 @@
     <div class="cmdbox"><span class="dollar">$</span> <span class="cmd">npx loop-cli demo</span><span class="cursor" aria-hidden="true"></span></div>
     <div class="comment"># watch a loop work, no API key needed</div>
 
-    <div id="demo" class="prompt section">$ loop run</div>
+    <div id="demo" class="prompt section">$ loop run &nbsp;# a real run: claude-haiku-4-5, three iterations, $0.23, condensed for length</div>
     <div class="term" id="term" aria-label="a loop run, replayed"></div>
 
     <div class="prompt section">$ cat WHY.txt</div>
@@ -231,29 +231,49 @@ Add full-text search to GET /posts. See SPEC.md.
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var SPEED = 1;
   // Each line: text, colour, and the delay before it appears.
+  // A real run (2026-09-07): Claude Haiku 4.5 as worker and critic, three iterations, $0.23.
+  // Condensed for length: iteration 2 is one line, some narration is cut. Numbers, files, hashes, verdicts as printed.
   var LINES = [
-    ['─── iteration 3/25 ─────────────── claude · 1m33s · $0.20 ───', '#55a061', 600],
-    ['', '#55a061', 200],
-    ['▸ claude (claude -p --output-format stream-json ...)', '#9fe8a9', 700],
-    ['│ The loop rejected my "done": the README item is still', '#5da368', 500],
-    ['│ open. Writing it now.', '#5da368', 500],
-    ['│ ⚙ Write README.md', '#ffd24d', 700],
-    ['│ ⚙ Edit  LOOP.md', '#ffd24d', 700],
-    ['│ <loop:done/>', '#b6ffca', 800],
-    ['▸ 2 files changed, 41s, $0.09, 3 tool calls  LOOP.md, README.md', '#9fe8a9', 600],
-    ['▸ letter: Wrote README.md and ticked the last item.', '#9fe8a9', 600],
-    ['▸ check: node test.js -> pass (30ms)', '#3dff70', 700],
-    ['▸ git: committed 06c6eae', '#9fe8a9', 600],
+    ['─── iteration 1/5 ─────────────────── claude · 0s ───', '#55a061', 500],
+    ['', '#55a061', 150],
+    ['▸ claude / claude-haiku-4-5-20251001', '#9fe8a9', 600],
+    ["│ I'll start fresh on this greeting library. First, let me read the test spec.", '#5da368', 700],
+    ['│ ⚙ Read  test.js', '#ffd24d', 600],
+    ['│ ⚙ Write  greet.js', '#ffd24d', 700],
+    ['│ ⚙ Edit  LOOP.md', '#ffd24d', 600],
+    ['│ ⚙ Write  .loop/letter.md', '#ffd24d', 600],
+    ["│ Done! I've implemented greet(name). The next iteration can tick the second item and write the README.", '#5da368', 700],
+    ['│ <loop:done/>', '#b6ffca', 700],
+    ['▸ 2 files changed, 46s, $0.07, 7 tool calls  LOOP.md, greet.js', '#9fe8a9', 500],
+    ['▸ letter: Created `greet.js` as an ES module with two exported functions:', '#9fe8a9', 500],
+    ['▸ check: node test.js -> pass (26ms)', '#3dff70', 600],
+    ['▸ git: committed 15af07a', '#9fe8a9', 500],
+    ['▸ verdict: continue  done rejected: 2 checklist items still open', '#ffd24d', 900],
+    ['', '#9fe8a9', 200],
+    ['… iteration 2: verified and ticked shout(s), check pass, committed bd2b02d, 1 item still open …', '#55a061', 900],
+    ['', '#9fe8a9', 200],
+    ['─── iteration 3/5 ─────────────── claude · 1m23s · $0.13 ───', '#55a061', 500],
+    ['', '#55a061', 150],
+    ['▸ claude / claude-haiku-4-5-20251001', '#9fe8a9', 600],
+    ['│ Looking at the checklist, I need to write README.md documenting the two functions.', '#5da368', 700],
+    ['│ ⚙ Read  greet.js', '#ffd24d', 600],
+    ['│ ⚙ Write  README.md', '#ffd24d', 700],
+    ['│ ⚙ Edit  LOOP.md', '#ffd24d', 600],
+    ['│ <loop:done/>', '#b6ffca', 700],
+    ['▸ 2 files changed, 35s, $0.06, 9 tool calls  LOOP.md, README.md', '#9fe8a9', 500],
+    ['▸ check: node test.js -> pass (19ms)', '#3dff70', 600],
+    ['▸ git: committed 7748867', '#9fe8a9', 500],
     ['▸ critic (claude)', '#9fe8a9', 700],
-    ['│ Read the diff against the goal. Tests cover both', '#5da368', 450],
-    ['│ functions; README matches. No stubs.', '#5da368', 450],
+    ["│ I'll review this systematically. Let me read the key files to verify the work against the goal.", '#5da368', 700],
+    ['│ ⚙ Read  greet.js', '#ffd24d', 500],
+    ['│ ⚙ Read  README.md', '#ffd24d', 500],
     ['│ <loop:approve/>', '#b6ffca', 800],
     ['▸ critic: approved', '#9fe8a9', 500],
-    ['▸ verdict: done verified and approved', '#9fe8a9', 800],
+    ['▸ verdict: done  verified and approved', '#3dff70', 800],
     ['', '#9fe8a9', 300],
-    ['✓ done after 3 iterations, 2m14s, $0.29', '#3dff70', 600]
+    ['✓ done after 3 iterations, 2m13s, $0.23', '#3dff70', 600]
   ];
-  var HOLD = 4000; // how long the finished run stays on screen before it loops again
+  var HOLD = 4500; // how long the finished run stays on screen before it loops again
 
   function line(l) {
     var d = document.createElement('div');
@@ -274,6 +294,7 @@ Add full-text search to GET /posts. See SPEC.md.
     term.innerHTML = '';
     for (var i = 0; i < n; i++) term.appendChild(line(LINES[i]));
     if (n < LINES.length) term.appendChild(cursor);
+    term.scrollTop = term.scrollHeight;
   }
   function tick() {
     var wait = n >= LINES.length ? HOLD : LINES[n][2] / SPEED;

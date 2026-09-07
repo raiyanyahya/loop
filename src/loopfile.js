@@ -82,6 +82,9 @@ export function normalizeConfig(raw = {}, overrides = {}, ctx = {}) {
   cfg.cwd = r.cwd ? String(r.cwd) : null;
   cfg.env = r.env && typeof r.env === 'object' ? Object.fromEntries(Object.entries(r.env).map(([k, v]) => [k, String(v)])) : {};
   cfg.sandbox = r.sandbox ? String(r.sandbox) : null;
+  const perms = r.permissions === undefined || r.permissions === null ? 'bypass' : String(r.permissions).toLowerCase();
+  if (!['bypass', 'edits', 'default'].includes(perms)) throw new Error(`permissions must be bypass, edits, or default (got "${perms}")`);
+  cfg.permissions = perms; // bypass: no prompts at all; edits: file edits auto-approved, everything else denied; default: the agent's own defaults
 
   // --- verifier
   const until = toArray(r.until ?? DEFAULTS.until).map((u) => String(u).trim()).filter(Boolean);

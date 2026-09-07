@@ -7,7 +7,7 @@
   <a href="https://github.com/raiyanyahya/loop/actions/workflows/pages.yml"><img alt="Website" src="https://github.com/raiyanyahya/loop/actions/workflows/pages.yml/badge.svg"></a>
   <a href="https://www.npmjs.com/package/loop-cli"><img alt="npm" src="https://img.shields.io/npm/v/loop-cli?logo=npm&color=cb3837"></a>
   <a href="https://www.npmjs.com/package/loop-cli"><img alt="downloads" src="https://img.shields.io/npm/dm/loop-cli"></a>
-  <img alt="tests" src="https://img.shields.io/badge/tests-63%20passing-2ea44f">
+  <img alt="tests" src="https://img.shields.io/badge/tests-68%20passing-2ea44f">
   <img alt="node" src="https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white">
   <img alt="dependencies" src="https://img.shields.io/badge/dependencies-0-blue">
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-blue"></a>
@@ -17,7 +17,8 @@
 npx loop-cli demo        # watch a loop work, no API key needed
 ```
 
-<p align="center"><img src="docs/demo.svg" width="760" alt="A loop run, replayed: iteration 3 of 25 on claude. The agent finishes the README and declares done, the check passes, git commits, the critic approves, verdict done."></p>
+<p align="center"><img src="docs/demo.svg" width="800" alt="A real loop run, replayed: Claude Haiku builds a greeting library over three iterations. Iteration 1 claims done and is rejected with two checklist items open; iteration 3 finishes, the check passes, git commits, the critic approves, verdict done. 2m13s, $0.23."></p>
+<p align="center"><sub>A real run: Claude Haiku 4.5 as worker and critic, <code>permissions: edits</code>, a three-item checklist, <code>node test.js</code> as the check, <code>test.js</code> protected. Three iterations, 2m13s, $0.23. Condensed for length only; every number, file, hash, and verdict is as printed.</sub></p>
 
 ---
 
@@ -143,7 +144,7 @@ More templates: `tdd`, `fix-ci`, `checklist`, `relay`, `ralph`. `loop init --lis
 
 `model:` is passed to each CLI's model flag; `args:` appends anything else. For a custom `command:`, `{promptfile}` is replaced by the prompt's path, `{prompt}` by the shell-quoted prompt, and with neither the prompt is piped to stdin. `sandbox:` wraps whatever the adapter builds: `{cmd}` is the quoted agent command, `{cwd}` the working directory.
 
-The `claude` adapter is exercised in this repo. The others follow the vendors' documented non-interactive flags; run `loop doctor` to see what is installed and `loop run --dry` to see the exact command before spending anything. Every adapter runs the agent with permissions bypassed, because that is what a loop is for. Run loops in a worktree, a container, or a repository you can afford to reset.
+The `claude` adapter is exercised in this repo. The others follow the vendors' documented non-interactive flags; run `loop doctor` to see what is installed and `loop run --dry` to see the exact command before spending anything. By default every adapter runs the agent with permissions bypassed, because that is what a loop is for. `permissions: edits` is the narrower option: file edits are auto-approved and everything else, including shell commands, is denied, so the loop's own `until` checks do the running. It maps to `--permission-mode acceptEdits` for Claude, `--sandbox workspace-write` for Codex, and `--approval-mode auto_edit` for Gemini. Either way, run loops in a worktree, a container, or a repository you can afford to reset.
 
 When started from inside a Claude Code session, the loop strips the nested-session environment so a child `claude` starts cleanly. If Claude fails to authenticate twice in a row, the iteration is aborted instead of sitting through ten retries.
 
@@ -160,6 +161,7 @@ model: opus               # passed to the agent's --model flag
 args: ["--max-turns", "50"]   # extra CLI args for the agent
 command: "..."            # custom agent; {prompt} or {promptfile} are substituted, else stdin
 sandbox: "docker run --rm -i -v {cwd}:/work -w /work img sh -c {cmd}"
+permissions: bypass       # bypass (no prompts) | edits (file edits only, no shell) | default (the agent's own)
 cwd: packages/api         # work in a subdirectory
 env: { MY_VAR: value }    # extra environment for the agent and hooks
 
@@ -208,7 +210,7 @@ git:
   worktree: true          # run in .loop/worktrees/<name> on that branch
 ```
 
-Durations accept `30`, `30s`, `5m`, `8h`, `1h30m`. Every key can be overridden from the command line: `--agent`, `--model`, `--until` (repeatable), `--metric`, `--direction`, `--target`, `--keep`, `--critic`, `--protect` (repeatable), `--memory`, `--notify`, `--max`, `--max-time`, `--max-cost`, `--sleep`, `--stall`, `--name`.
+Durations accept `30`, `30s`, `5m`, `8h`, `1h30m`. Every key can be overridden from the command line: `--agent`, `--model`, `--permissions`, `--until` (repeatable), `--metric`, `--direction`, `--target`, `--keep`, `--critic`, `--protect` (repeatable), `--memory`, `--notify`, `--max`, `--max-time`, `--max-cost`, `--sleep`, `--stall`, `--name`.
 
 Commands run by the loop (hooks, checks, feedback, metric, the agent itself) see these environment variables: `LOOP=1`, `LOOP_NAME`, `LOOP_ITERATION`, `LOOP_AGENT`, `LOOP_ROLE` (`worker` or `critic`), `LOOP_PROMPT_FILE`, `LOOP_WORKDIR`, `LOOP_CHANGED` (after hooks), and at the end `LOOP_STATUS`, `LOOP_REASON`, `LOOP_ITERATIONS`, `LOOP_COST`.
 
@@ -354,7 +356,8 @@ loop run --dry
 ```
 git clone https://github.com/raiyanyahya/loop
 cd loop
-npm test                 # 63 tests, no API key needed
+npm test                 # 68 tests, no API key needed
+npm run test:torture     # edge cases against the real CLI: unicode paths, huge output, timeouts, concurrency
 node bin/loop.js demo    # a real loop in a temporary git repo
 npm link                 # puts `loop` on your PATH from this checkout
 npm run demo:svg         # regenerate the animated demo above

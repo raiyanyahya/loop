@@ -592,7 +592,7 @@ async function evaluateUntil(cfg, { sig, checklist }, { cwd, env, quiet }) {
     } else {
       const r = await runShell(u.cmd, { cwd, env, timeout: cfg.check_timeout });
       checks.push({ cmd: u.cmd, code: r.code, output: r.output, ms: r.ms, timedOut: r.timedOut });
-      if (!quiet) ui.step(`check: ${c.dim(u.cmd)} -> ${r.code === 0 ? c.green('pass') : c.yellow(`exit ${r.code}`)} ${c.dim(`(${fmtDuration(r.ms)})`)}`);
+      if (!quiet) ui.step(`check: ${c.dim(u.cmd)} -> ${r.code === 0 ? c.green('pass') : c.yellow(r.timedOut ? 'timed out' : `exit ${r.code}`)} ${c.dim(`(${fmtDuration(r.ms)})`)}`);
       if (r.code !== 0) {
         satisfied = false;
         failures.push(`\`${u.cmd}\` exited ${r.code}${r.timedOut ? ' (timed out)' : ''}`);
@@ -631,6 +631,7 @@ function runAgent(inv, { cwd, timeout, quiet, setKill }) {
     const renderer = createRenderer({
       mode: inv.parse,
       quiet,
+      cwd,
       onAuthFailure: () => {
         authFailed = true;
         kill('SIGTERM');
@@ -699,9 +700,14 @@ async function interruptibleSleep(ms, shouldStop) {
   }
 }
 
+/** The first substantive line of a letter or reply: skips headings, salutations, and section labels. */
 function firstLine(s) {
   if (!s) return '';
-  return String(s).split('\n').map((l) => l.replace(/^#+\s*/, '').trim()).find((l) => l && !l.startsWith('<loop:')) || '';
+  const raw = String(s).split('\n');
+  const clean = (l) => l.replace(/^#+\s*/, '').replace(/^[-*]\s+/, '').replace(/\*\*/g, '').trim();
+  const usable = (l) => l && !l.startsWith('<loop:') && !/^(letter( to| from)?\b.*|dear\b.*|hi\b.*|hello\b.*)$/i.test(l) && !/^[a-z ]{1,24}:?$/i.test(l);
+  const body = raw.filter((l) => !/^\s*#/.test(l)).map(clean).find(usable);
+  return body || raw.map(clean).find((l) => l && !l.startsWith('<loop:')) || '';
 }
 
 /** The last number printed by a metric command, e.g. "val_bpb: 1.802" -> 1.802. */

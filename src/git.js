@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { runShell, sha1 } from './util.js';
+import { runShell, runCmd, sha1 } from './util.js';
 
 const IGNORE_DIRS = new Set(['.git', '.loop', 'node_modules', '.venv', 'venv', '__pycache__', 'dist', 'build', 'target', '.next', '.cache', 'coverage']);
 
@@ -26,14 +26,14 @@ export async function currentBranch(cwd) {
 export async function snapshot(cwd, useGit) {
   const map = new Map();
   if (useGit) {
-    const st = await runShell('git status --porcelain=v1 -uall', { cwd, timeout: 30000, maxOutput: 2_000_000 });
+    const st = await runShell('git -c core.quotePath=false status --porcelain=v1 -uall', { cwd, timeout: 30000, maxOutput: 2_000_000 });
     for (const line of st.output.split('\n')) {
       if (!line.trim()) continue;
       const file = line.slice(3).trim().replace(/^"|"$/g, '');
       if (file.startsWith('.loop/')) continue;
       map.set(file, line.slice(0, 2) + ':' + fileStamp(path.join(cwd, file)));
     }
-    const diff = await runShell('git diff --numstat HEAD --', { cwd, timeout: 30000, maxOutput: 2_000_000 });
+    const diff = await runShell('git -c core.quotePath=false diff --numstat HEAD --', { cwd, timeout: 30000, maxOutput: 2_000_000 });
     for (const line of diff.output.split('\n')) {
       const m = /^(\S+)\s+(\S+)\s+(.+)$/.exec(line);
       if (!m || m[3].startsWith('.loop/')) continue;
@@ -87,7 +87,7 @@ export async function commitAll(cwd, message) {
   await runShell("git add -A -- . ':(exclude).loop'", { cwd, timeout: 60000 });
   const staged = await runShell('git diff --cached --quiet', { cwd, timeout: 60000 });
   if (staged.code === 0) return null; // nothing to commit
-  const r = await runShell(`git commit -q -m ${JSON.stringify(message)}`, { cwd, timeout: 60000 });
+  const r = await runCmd('git', ['commit', '-q', '-m', message], { cwd, timeout: 60000 });
   if (r.code !== 0) return { error: r.output.trim() };
   return { sha: await headSha(cwd) };
 }
@@ -95,8 +95,8 @@ export async function commitAll(cwd, message) {
 export async function ensureBranch(cwd, branch) {
   const cur = await currentBranch(cwd);
   if (cur === branch) return { switched: false };
-  const has = await runShell(`git rev-parse --verify --quiet ${JSON.stringify(branch)}`, { cwd, timeout: 10000 });
-  const r = await runShell(has.code === 0 ? `git checkout -q ${JSON.stringify(branch)}` : `git checkout -q -b ${JSON.stringify(branch)}`, { cwd, timeout: 30000 });
+  const has = await runCmd('git', ['rev-parse', '--verify', '--quiet', branch], { cwd, timeout: 10000 });
+  const r = await runCmd('git', has.code === 0 ? ['checkout', '-q', branch] : ['checkout', '-q', '-b', branch], { cwd, timeout: 30000 });
   if (r.code !== 0) throw new Error(`could not switch to branch ${branch}: ${r.output.trim()}`);
   return { switched: true, created: has.code !== 0 };
 }
@@ -118,7 +118,7 @@ export { sha1 };
 
 /** Commit whatever is in the tree as a baseline so keep/revert has a known-good HEAD. */
 export async function baselineCommit(cwd, message) {
-  const st = await runShell('git status --porcelain', { cwd, timeout: 30000 });
+  const st = await runShell('git -c core.quotePath=false status --porcelain', { cwd, timeout: 30000 });
   if (!st.output.trim()) return null;
   return commitAll(cwd, message);
 }
@@ -134,9 +134,9 @@ export async function revertToHead(cwd) {
 export async function restoreFiles(cwd, files) {
   const restored = [];
   for (const f of files) {
-    const tracked = await runShell(`git ls-files --error-unmatch -- ${JSON.stringify(f)}`, { cwd, timeout: 10000 });
+    const tracked = await runCmd('git', ['ls-files', '--error-unmatch', '--', f], { cwd, timeout: 10000 });
     let r;
-    if (tracked.code === 0) r = await runShell(`git checkout -q HEAD -- ${JSON.stringify(f)}`, { cwd, timeout: 30000 });
+    if (tracked.code === 0) r = await runCmd('git', ['checkout', '-q', 'HEAD', '--', f], { cwd, timeout: 30000 });
     else {
       try {
         fs.rmSync(path.join(cwd, f), { force: true });
@@ -156,7 +156,7 @@ export async function diffForReview(cwd, { maxBytes = 60000 } = {}) {
   const tracked = await runShell('git diff HEAD --stat=120 -- . ":(exclude).loop" && git diff HEAD -- . ":(exclude).loop"', { cwd, timeout: 60000, maxOutput: maxBytes });
   if (tracked.code === 0) out += tracked.output;
   // New files are invisible to `git diff HEAD`; show them as additions.
-  const untracked = await runShell('git ls-files --others --exclude-standard', { cwd, timeout: 30000 });
+  const untracked = await runShell('git -c core.quotePath=false ls-files --others --exclude-standard', { cwd, timeout: 30000 });
   for (const f of untracked.output.split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('.loop/'))) {
     const text = readFileCapped(path.join(cwd, f), 20000);
     if (text === null) continue;
@@ -184,9 +184,8 @@ export async function ensureWorktree(cwd, branch, dir) {
   const abs = path.resolve(cwd, dir);
   if (fs.existsSync(path.join(abs, '.git'))) return { path: abs, created: false };
   fs.mkdirSync(path.dirname(abs), { recursive: true });
-  const has = await runShell(`git rev-parse --verify --quiet ${JSON.stringify(branch)}`, { cwd, timeout: 10000 });
-  const cmd = has.code === 0 ? `git worktree add -q ${JSON.stringify(abs)} ${JSON.stringify(branch)}` : `git worktree add -q -b ${JSON.stringify(branch)} ${JSON.stringify(abs)}`;
-  const r = await runShell(cmd, { cwd, timeout: 60000 });
+  const has = await runCmd('git', ['rev-parse', '--verify', '--quiet', branch], { cwd, timeout: 10000 });
+  const r = await runCmd('git', has.code === 0 ? ['worktree', 'add', '-q', abs, branch] : ['worktree', 'add', '-q', '-b', branch, abs], { cwd, timeout: 60000 });
   if (r.code !== 0) throw new Error(`could not create worktree: ${r.output.trim()}`);
   return { path: abs, created: true };
 }

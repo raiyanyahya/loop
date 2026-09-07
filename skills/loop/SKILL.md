@@ -12,7 +12,7 @@ description: Use when the user wants to run an agent in a loop, set up an overni
 `LOOP.md` = YAML frontmatter (the loop) + markdown body (the goal). Keys, by the five parts of a loop:
 
 - goal: the body; `- [ ]` checkboxes become the checklist; `context: [SPEC.md]` inlines files.
-- worker: `agent: claude` or `agent: [claude, codex]` (relay); `model:`; `command:` for any CLI; `sandbox: "docker run ... {cmd}"`.
+- worker: `agent: claude` or `agent: [claude, codex]` (relay); `model:`; `command:` for any CLI; `sandbox: "docker run ... {cmd}"`; `permissions: bypass|edits|default`.
 - verifier: `until: [done, "npm test"]` (all must hold; `checklist`, `never`); `metric: "cmd"` + `direction: min|max` + `keep: improve|no-regress|always` + `target:`; `protect: ["test/**"]`; `critic: codex | same | {agent, when: done|N}`.
 - memory: the letter (`.loop/letter.md`, automatic); `memory: NOTES.md` for durable notes.
 - brakes: `max`, `max_time`, `max_cost`, `timeout`, `stall`, `repeat`.
