@@ -5,8 +5,8 @@
   <a href="https://github.com/raiyanyahya/loop/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/raiyanyahya/loop/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://github.com/raiyanyahya/loop/actions/workflows/publish.yml"><img alt="Publish" src="https://github.com/raiyanyahya/loop/actions/workflows/publish.yml/badge.svg"></a>
   <a href="https://github.com/raiyanyahya/loop/actions/workflows/pages.yml"><img alt="Website" src="https://github.com/raiyanyahya/loop/actions/workflows/pages.yml/badge.svg"></a>
-  <a href="https://www.npmjs.com/package/loop-cli"><img alt="npm" src="https://img.shields.io/npm/v/loop-cli?logo=npm&color=cb3837"></a>
-  <a href="https://www.npmjs.com/package/loop-cli"><img alt="downloads" src="https://img.shields.io/npm/dm/loop-cli"></a>
+  <a href="https://www.npmjs.com/package/theloop"><img alt="npm" src="https://img.shields.io/npm/v/theloop?logo=npm&color=cb3837"></a>
+  <a href="https://www.npmjs.com/package/theloop"><img alt="downloads" src="https://img.shields.io/npm/dm/theloop"></a>
   <img alt="tests" src="https://img.shields.io/badge/tests-68%20passing-2ea44f">
   <img alt="node" src="https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white">
   <img alt="dependencies" src="https://img.shields.io/badge/dependencies-0-blue">
@@ -14,7 +14,7 @@
 </p>
 
 ```
-npx loop-cli demo        # watch a loop work, no API key needed
+npx theloop demo        # watch a loop work, no API key needed
 ```
 
 <p align="center"><img src="docs/demo.svg" width="800" alt="A real loop run, replayed: Claude Haiku builds a greeting library over three iterations. Iteration 1 claims done and is rejected with two checklist items open; iteration 3 finishes, the check passes, git commits, the critic approves, verdict done. 2m13s, $0.23."></p>
@@ -48,7 +48,7 @@ The most powerful way to use a coding agent is not a longer conversation. It is 
 ## Sixty seconds
 
 ```
-npm i -g loop-cli     # installs the `loop` command
+npm i -g theloop     # installs the `loop` command
 cd your-project
 loop init             # asks what kind of loop, writes LOOP.md
 loop run              # go
@@ -372,7 +372,7 @@ Three workflows in `.github/workflows/`:
 | workflow | runs | does |
 |---|---|---|
 | CI | every push and pull request | `npm test` on Node 18, 20, and 22 on Ubuntu and macOS, the demo end to end, a tarball check, and a check that `docs/demo.svg` is reproducible |
-| Publish | on a `v*` tag | tests, verifies the tag matches `package.json`, publishes `loop-cli` to npm with provenance (uses the `loop` repository secret as the npm token) |
+| Publish | on a `v*` tag | tests, verifies the tag matches `package.json`, publishes `theloop` to npm with provenance (uses the `loop` repository secret as the npm token) |
 | Website | pushes to `main` that touch `docs/` | deploys `docs/` to GitHub Pages |
 
 Release: bump the version, add a changelog entry, `git tag v0.2.0`, push the tag.
@@ -387,7 +387,7 @@ Release: bump the version, add a changelog entry, `git tag v0.2.0`, push the tag
 
 **Does it need git?** No, but keep/revert, protected-file restore, worktrees, and the critic's diff do. Without git, `loop` still tracks changes by walking the tree and reports what it would have reverted.
 
-**Why is the package called `loop-cli`?** The npm name `loop` belongs to an unrelated package. `npm i -g loop-cli` installs the `loop` command.
+**Why is the package called `theloop`?** The npm name `loop` belongs to an unrelated package, and `loop-cli` was unpublished by someone in 2022, which npm treats as permanently burned. `npm i -g theloop` installs the `loop` command.
 
 **Windows?** It should work (no shell tricks, no native deps), but it is not tested there yet. Process-group signalling is Unix-only, so Ctrl-C handling is simpler on Windows.
 

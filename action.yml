@@ -36,7 +36,7 @@ runs:
         args=("run" "${{ inputs.loopfile }}" --quiet)
         [ -n "${{ inputs.agent }}" ] && args+=(--agent "${{ inputs.agent }}")
         [ -n "${{ inputs.max }}" ] && args+=(--max "${{ inputs.max }}")
-        npx --yes loop-cli@${{ inputs.version }} "${args[@]}" ${{ inputs.extra }}
+        npx --yes theloop@${{ inputs.version }} "${args[@]}" ${{ inputs.extra }}
         code=$?
         status=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('.loop/state.json','utf8')).status)}catch{console.log('failed')}")
         echo "status=$status" >> "$GITHUB_OUTPUT"

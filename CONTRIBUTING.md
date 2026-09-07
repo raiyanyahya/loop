@@ -23,4 +23,4 @@ npm link                 # puts `loop` on your PATH from this checkout
 
 ## Releasing
 
-Bump `version` in `package.json`, add a `CHANGELOG.md` entry, tag `vX.Y.Z`, and push the tag. The Publish workflow runs the tests and publishes `loop-cli` to npm with provenance. The Website workflow deploys `docs/` on every push to `main` that touches it.
+Bump `version` in `package.json`, add a `CHANGELOG.md` entry, tag `vX.Y.Z`, and push the tag. The Publish workflow runs the tests and publishes `theloop` to npm with provenance. The Website workflow deploys `docs/` on every push to `main` that touches it.
