@@ -1,5 +1,9 @@
 name: Publish
 
+# Publishes to npm with trusted publishing (OIDC): no token, no secret, no 2FA bypass.
+# One-time setup on npmjs.com, package settings, Trusted Publisher: GitHub Actions,
+# user raiyanyahya, repository loop, workflow filename publish.yml. Provenance is automatic.
+
 on:
   push:
     tags: ["v*"]
@@ -17,18 +21,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
+      - name: npm 11.5.1 or newer is required for trusted publishing
+        run: npm install -g npm@latest && npm --version
       - run: npm test
       - name: Tag matches package version
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           v=$(node -p "require('./package.json').version")
           [ "refs/tags/v$v" = "$GITHUB_REF" ] || { echo "tag $GITHUB_REF does not match package version $v"; exit 1; }
-      - name: Token can authenticate to npm
-        run: npm whoami
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.loop }}
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.loop }}
+      - run: npm publish --access public

@@ -372,10 +372,10 @@ Three workflows in `.github/workflows/`:
 | workflow | runs | does |
 |---|---|---|
 | CI | every push and pull request | `npm test` on Node 18, 20, and 22 on Ubuntu and macOS, the demo end to end, a tarball check, and a check that `docs/demo.svg` is reproducible |
-| Publish | on a `v*` tag | tests, verifies the tag matches `package.json`, publishes `theloop` to npm with provenance (uses the `loop` repository secret as the npm token) |
+| Publish | on a `v*` tag | tests, verifies the tag matches `package.json`, publishes `theloop` to npm through [trusted publishing](https://docs.npmjs.com/trusted-publishers): no token, provenance automatic |
 | Website | pushes to `main` that touch `docs/` | deploys `docs/` to GitHub Pages |
 
-Release: bump the version, add a changelog entry, `git tag v0.2.0`, push the tag.
+Release: bump the version, add a changelog entry, `git tag vX.Y.Z`, push the tag. The trusted publisher on npmjs.com (package settings) is GitHub Actions, user `raiyanyahya`, repository `loop`, workflow `publish.yml`.
 
 ## FAQ
 
