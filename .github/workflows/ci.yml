@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (node ${{ matrix.node }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Configure git for the loop's own commits
+        run: |
+          git config --global user.name "loop ci"
+          git config --global user.email "ci@loop.invalid"
+      - run: npm test
+      - name: Demo runs end to end
+        run: node bin/loop.js demo --quick --quiet
+
+  package:
+    name: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Tarball contents
+        run: npm pack --dry-run
+      - name: Demo SVG is reproducible
+        run: node scripts/demo-svg.js && git diff --exit-code -- docs/demo.svg

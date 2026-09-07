@@ -1,37 +1,23 @@
 <h1 align="center">⟲ loop</h1>
 <p align="center"><b>Loop engineering for AI agents.</b><br>One file. Any agent. Until it's verified.</p>
 
+<p align="center">
+  <a href="https://github.com/raiyanyahya/loop/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/raiyanyahya/loop/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/raiyanyahya/loop/actions/workflows/publish.yml"><img alt="Publish" src="https://github.com/raiyanyahya/loop/actions/workflows/publish.yml/badge.svg"></a>
+  <a href="https://github.com/raiyanyahya/loop/actions/workflows/pages.yml"><img alt="Website" src="https://github.com/raiyanyahya/loop/actions/workflows/pages.yml/badge.svg"></a>
+  <a href="https://www.npmjs.com/package/loop-cli"><img alt="npm" src="https://img.shields.io/npm/v/loop-cli?logo=npm&color=cb3837"></a>
+  <a href="https://www.npmjs.com/package/loop-cli"><img alt="downloads" src="https://img.shields.io/npm/dm/loop-cli"></a>
+  <img alt="tests" src="https://img.shields.io/badge/tests-63%20passing-2ea44f">
+  <img alt="node" src="https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white">
+  <img alt="dependencies" src="https://img.shields.io/badge/dependencies-0-blue">
+  <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-blue"></a>
+</p>
+
 ```
 npx loop-cli demo        # watch a loop work, no API key needed
 ```
 
-<p align="center"><img src="docs/demo.svg" width="760" alt="loop run, replayed: iteration 3 of 25 on claude. The agent finishes the README and declares done, the check passes, git commits, the critic approves, verdict done."></p>
-
-<details>
-<summary>The same run as plain text</summary>
-
-```
-  ─── iteration 3/25 ─────────────────────────────────────── claude · 1m33s · $0.20 ───
-
-  ▸ claude (claude -p --output-format stream-json ...)
-  │ The loop rejected my "done": the README item is still open. Writing it now.
-  │ ⚙ Write README.md
-  │ ⚙ Edit  LOOP.md
-  │ <loop:done/>
-  ▸ 2 files changed, 41s, $0.09, 3 tool calls  LOOP.md, README.md
-  ▸ letter: Wrote README.md and ticked the last item. Nothing left to do.
-  ▸ check: node test.js -> pass (30ms)
-  ▸ git: committed 06c6eae
-  ▸ critic (claude)
-  │ Read the diff against the goal. Tests cover both functions; README matches. No stubs.
-  │ <loop:approve/>
-  ▸ critic: approved
-  ▸ verdict: done verified and approved
-
-  ✓ done after 3 iterations, 2m14s, $0.29
-```
-
-</details>
+<p align="center"><img src="docs/demo.svg" width="760" alt="A loop run, replayed: iteration 3 of 25 on claude. The agent finishes the README and declares done, the check passes, git commits, the critic approves, verdict done."></p>
 
 ---
 
@@ -54,6 +40,8 @@ The most powerful way to use a coding agent is not a longer conversation. It is 
 - [Recipes](#recipes)
 - [Engineering notes](#engineering-notes)
 - [Elsewhere: Action, plugin, website](#elsewhere-action-plugin-website)
+- [Development](#development)
+- [CI and releases](#ci-and-releases)
 - [FAQ](#faq)
 
 ## Sixty seconds
@@ -346,10 +334,10 @@ loop run --dry
 
 ## Elsewhere: Action, plugin, website
 
-**GitHub Action.** The repo root has an `action.yml`. Inputs: `loopfile` (default `LOOP.md`), `agent`, `max`, `extra` (more `loop run` flags), `version`. Output: `status`. The job must provide the agent CLI and its credentials; the step's exit code follows the loop's.
+**GitHub Action.** The repo root has an `action.yml`, so any repository can run a Loopfile from a workflow. Inputs: `loopfile` (default `LOOP.md`), `agent`, `max`, `extra` (more `loop run` flags), `version`. Output: `status`. The job must provide the agent CLI and its credentials; the step's exit code follows the loop's.
 
 ```yaml
-- uses: your-org/loop@main
+- uses: raiyanyahya/loop@main
   with:
     loopfile: loops/fix-ci.md
     extra: --until "npm test" --protect "test/**"
@@ -360,6 +348,31 @@ loop run --dry
 **Claude Code plugin.** `.claude-plugin/plugin.json` plus `skills/loop/SKILL.md`: a skill that teaches Claude how to write a Loopfile, pick a kind, and behave when it is the agent inside a loop. Install the repo as a plugin, or copy `skills/loop` into your project's `.claude/skills/`.
 
 **Website.** `docs/index.html` is a single self-contained page with a replay of a loop run. Serve `docs/` with GitHub Pages.
+
+## Development
+
+```
+git clone https://github.com/raiyanyahya/loop
+cd loop
+npm test                 # 63 tests, no API key needed
+node bin/loop.js demo    # a real loop in a temporary git repo
+npm link                 # puts `loop` on your PATH from this checkout
+npm run demo:svg         # regenerate the animated demo above
+```
+
+Layout: `bin/loop.js` is the entry point, `src/runner.js` the engine, `src/loopfile.js` the config schema, `src/prompt.js` the worker and critic prompts, `src/agents.js` the adapters, `src/protocol.js` the tags, `src/git.js` snapshots and reverts, `src/journal.js` the on-disk record, `src/report.js` the HTML report, `src/fake-agent.js` the scripted agent the tests and the demo use. Templates live in `templates/`, the website in `docs/`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the ground rules and [CHANGELOG.md](CHANGELOG.md) for what changed.
+
+## CI and releases
+
+Three workflows in `.github/workflows/`:
+
+| workflow | runs | does |
+|---|---|---|
+| CI | every push and pull request | `npm test` on Node 18, 20, and 22 on Ubuntu and macOS, the demo end to end, a tarball check, and a check that `docs/demo.svg` is reproducible |
+| Publish | on a `v*` tag | tests, verifies the tag matches `package.json`, publishes `loop-cli` to npm with provenance (needs an `NPM_TOKEN` secret) |
+| Website | pushes to `main` that touch `docs/` | deploys `docs/` to GitHub Pages |
+
+Release: bump the version, add a changelog entry, `git tag v0.2.0`, push the tag.
 
 ## FAQ
 

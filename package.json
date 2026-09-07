@@ -2,6 +2,16 @@
   "name": "loop-cli",
   "version": "0.2.0",
   "description": "Loop engineering for AI agents. One file, any agent, until it's done.",
+  "author": "Raiyan Yahya",
+  "license": "MIT",
+  "homepage": "https://raiyanyahya.github.io/loop",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raiyanyahya/loop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raiyanyahya/loop/issues"
+  },
   "type": "module",
   "bin": {
     "loop": "bin/loop.js"
@@ -37,6 +47,5 @@
     "loop-engineering",
     "ai",
     "cli"
-  ],
-  "license": "MIT"
+  ]
 }

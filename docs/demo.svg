@@ -1,11 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="760" height="510" viewBox="0 0 760 510" role="img" aria-label="loop run: iteration 3 of 25 on claude. The agent finishes the README, declares done, the checks pass, git commits, the critic approves, verdict done.">
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="510" viewBox="0 0 760 510" role="img" aria-label="A loop run, replayed: iteration 3 of 25 on claude. The agent finishes the README and declares done, the check passes, git commits, the critic approves, verdict done.">
 <title>loop run, replayed</title>
-<defs>
-  <filter id="glow" x="-5%" y="-50%" width="110%" height="200%"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-</defs>
-<style>
-text { font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace; font-size: 13px; }
-.glow { filter: url(#glow); }
+<style>text{font-family:'SF Mono','Cascadia Code','JetBrains Mono','Fira Code',Menlo,Consolas,'DejaVu Sans Mono',monospace;font-size:13px;white-space:pre}
 .l0{opacity:0;animation:a0 15800ms linear infinite}@keyframes a0{0%{opacity:0}3.797%{opacity:0}3.807%{opacity:1}100%{opacity:1}}
 .c0{opacity:0;animation:c0 15800ms linear infinite}@keyframes c0{0%{opacity:0}0.000%{opacity:0}0.010%{opacity:1}3.797%{opacity:1}3.807%{opacity:0}100%{opacity:0}}
 .l1{opacity:0;animation:a1 15800ms linear infinite}@keyframes a1{0%{opacity:0}5.063%{opacity:0}5.073%{opacity:1}100%{opacity:1}}
@@ -48,49 +43,52 @@ text { font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberat
 .c19{opacity:0;animation:c19 15800ms linear infinite}@keyframes c19{0%{opacity:0}70.886%{opacity:0}70.896%{opacity:1}74.684%{opacity:1}74.694%{opacity:0}100%{opacity:0}}
 .blink{animation:blink 1s step-end infinite}@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
 </style>
-<rect width="760" height="510" fill="#050805"/>
-<text x="22" y="17" fill="#55a061">$ loop run</text>
-<rect x="22" y="26" width="716" height="478" fill="#060d06" stroke="#1e4526"/>
-<g transform="translate(14, 10)">
-<text class="l0 glow" x="26" y="72" fill="#55a061" xml:space="preserve">─── iteration 3/25 ─────────────── claude · 1m33s · $0.20 ───</text>
-<g class="c0"><rect class="blink" x="26" y="60" width="8" height="15" fill="#3dff70"/></g>
-<text class="l1 glow" x="26" y="94" fill="#55a061" xml:space="preserve"> </text>
-<g class="c1"><rect class="blink" x="26" y="82" width="8" height="15" fill="#3dff70"/></g>
-<text class="l2 glow" x="26" y="116" fill="#9fe8a9" xml:space="preserve">▸ claude (claude -p --output-format stream-json ...)</text>
-<g class="c2"><rect class="blink" x="26" y="104" width="8" height="15" fill="#3dff70"/></g>
-<text class="l3 glow" x="26" y="138" fill="#5da368" xml:space="preserve">│ The loop rejected my "done": the README item is still</text>
-<g class="c3"><rect class="blink" x="26" y="126" width="8" height="15" fill="#3dff70"/></g>
-<text class="l4 glow" x="26" y="160" fill="#5da368" xml:space="preserve">│ open. Writing it now.</text>
-<g class="c4"><rect class="blink" x="26" y="148" width="8" height="15" fill="#3dff70"/></g>
-<text class="l5 glow" x="26" y="182" fill="#ffd24d" xml:space="preserve">│ ⚙ Write README.md</text>
-<g class="c5"><rect class="blink" x="26" y="170" width="8" height="15" fill="#3dff70"/></g>
-<text class="l6 glow" x="26" y="204" fill="#ffd24d" xml:space="preserve">│ ⚙ Edit  LOOP.md</text>
-<g class="c6"><rect class="blink" x="26" y="192" width="8" height="15" fill="#3dff70"/></g>
-<text class="l7 glow" x="26" y="226" fill="#b6ffca" xml:space="preserve">│ &lt;loop:done/&gt;</text>
-<g class="c7"><rect class="blink" x="26" y="214" width="8" height="15" fill="#3dff70"/></g>
-<text class="l8 glow" x="26" y="248" fill="#9fe8a9" xml:space="preserve">▸ 2 files changed, 41s, $0.09, 3 tool calls  LOOP.md, README.md</text>
-<g class="c8"><rect class="blink" x="26" y="236" width="8" height="15" fill="#3dff70"/></g>
-<text class="l9 glow" x="26" y="270" fill="#9fe8a9" xml:space="preserve">▸ letter: Wrote README.md and ticked the last item.</text>
-<g class="c9"><rect class="blink" x="26" y="258" width="8" height="15" fill="#3dff70"/></g>
-<text class="l10 glow" x="26" y="292" fill="#3dff70" xml:space="preserve">▸ check: node test.js -&gt; pass (30ms)</text>
-<g class="c10"><rect class="blink" x="26" y="280" width="8" height="15" fill="#3dff70"/></g>
-<text class="l11 glow" x="26" y="314" fill="#9fe8a9" xml:space="preserve">▸ git: committed 06c6eae</text>
-<g class="c11"><rect class="blink" x="26" y="302" width="8" height="15" fill="#3dff70"/></g>
-<text class="l12 glow" x="26" y="336" fill="#9fe8a9" xml:space="preserve">▸ critic (claude)</text>
-<g class="c12"><rect class="blink" x="26" y="324" width="8" height="15" fill="#3dff70"/></g>
-<text class="l13 glow" x="26" y="358" fill="#5da368" xml:space="preserve">│ Read the diff against the goal. Tests cover both</text>
-<g class="c13"><rect class="blink" x="26" y="346" width="8" height="15" fill="#3dff70"/></g>
-<text class="l14 glow" x="26" y="380" fill="#5da368" xml:space="preserve">│ functions; README matches. No stubs.</text>
-<g class="c14"><rect class="blink" x="26" y="368" width="8" height="15" fill="#3dff70"/></g>
-<text class="l15 glow" x="26" y="402" fill="#b6ffca" xml:space="preserve">│ &lt;loop:approve/&gt;</text>
-<g class="c15"><rect class="blink" x="26" y="390" width="8" height="15" fill="#3dff70"/></g>
-<text class="l16 glow" x="26" y="424" fill="#9fe8a9" xml:space="preserve">▸ critic: approved</text>
-<g class="c16"><rect class="blink" x="26" y="412" width="8" height="15" fill="#3dff70"/></g>
-<text class="l17 glow" x="26" y="446" fill="#9fe8a9" xml:space="preserve">▸ verdict: done verified and approved</text>
-<g class="c17"><rect class="blink" x="26" y="434" width="8" height="15" fill="#3dff70"/></g>
-<text class="l18 glow" x="26" y="468" fill="#9fe8a9" xml:space="preserve"> </text>
-<g class="c18"><rect class="blink" x="26" y="456" width="8" height="15" fill="#3dff70"/></g>
-<text class="l19 glow" x="26" y="490" fill="#3dff70" xml:space="preserve">✓ done after 3 iterations, 2m14s, $0.29</text>
-<g class="c19"><rect class="blink" x="26" y="478" width="8" height="15" fill="#3dff70"/></g>
+<defs><clipPath id="win"><rect width="760" height="510" rx="10"/></clipPath></defs>
+<g clip-path="url(#win)">
+  <rect width="760" height="510" fill="#1e2127"/>
+  <rect width="760" height="34" fill="#2c313a"/>
+  <circle cx="20" cy="17" r="6" fill="#ff5f57"/><circle cx="40" cy="17" r="6" fill="#febc2e"/><circle cx="60" cy="17" r="6" fill="#28c840"/>
+  <text x="380" y="21.5" text-anchor="middle" fill="#6b7280" font-size="12">⟲ loop</text>
+<text class="l0" x="20" y="63" xml:space="preserve"><tspan fill="#56b6c2">─── iteration 3/25 </tspan><tspan fill="#6b7280">──────────────────────────────</tspan><tspan fill="#56b6c2"> claude · 1m33s · $0.20 ───</tspan></text>
+<g class="c0"><rect class="blink" x="20" y="51" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l1" x="20" y="85" xml:space="preserve"><tspan fill="#c8ccd4"> </tspan></text>
+<g class="c1"><rect class="blink" x="20" y="73" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l2" x="20" y="107" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#eef0f3" font-weight="600">claude</tspan><tspan fill="#6b7280"> (claude -p --output-format stream-json ...)</tspan></text>
+<g class="c2"><rect class="blink" x="20" y="95" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l3" x="20" y="129" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">The loop rejected my "done": the README item is still open.</tspan></text>
+<g class="c3"><rect class="blink" x="20" y="117" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l4" x="20" y="151" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">Writing it now.</tspan></text>
+<g class="c4"><rect class="blink" x="20" y="139" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l5" x="20" y="173" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Write</tspan><tspan fill="#6b7280">  README.md</tspan></text>
+<g class="c5"><rect class="blink" x="20" y="161" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l6" x="20" y="195" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#e5c07b">⚙ </tspan><tspan fill="#eef0f3" font-weight="600">Edit</tspan><tspan fill="#6b7280">  LOOP.md</tspan></text>
+<g class="c6"><rect class="blink" x="20" y="183" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l7" x="20" y="217" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c678dd">&lt;loop:done/&gt;</tspan></text>
+<g class="c7"><rect class="blink" x="20" y="205" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l8" x="20" y="239" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">2 files changed, 41s, $0.09, 3 tool calls</tspan><tspan fill="#6b7280">  LOOP.md, README.md</tspan></text>
+<g class="c8"><rect class="blink" x="20" y="227" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l9" x="20" y="261" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">letter: </tspan><tspan fill="#6b7280">Wrote README.md and ticked the last item.</tspan></text>
+<g class="c9"><rect class="blink" x="20" y="249" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l10" x="20" y="283" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">check: </tspan><tspan fill="#6b7280">node test.js</tspan><tspan fill="#c8ccd4"> -&gt; </tspan><tspan fill="#98c379">pass</tspan><tspan fill="#6b7280"> (30ms)</tspan></text>
+<g class="c10"><rect class="blink" x="20" y="271" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l11" x="20" y="305" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">git: committed 06c6eae</tspan></text>
+<g class="c11"><rect class="blink" x="20" y="293" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l12" x="20" y="327" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#eef0f3" font-weight="600">critic</tspan><tspan fill="#6b7280"> (claude)</tspan></text>
+<g class="c12"><rect class="blink" x="20" y="315" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l13" x="20" y="349" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">Read the diff against the goal. Tests cover both functions;</tspan></text>
+<g class="c13"><rect class="blink" x="20" y="337" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l14" x="20" y="371" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c8ccd4">README matches. No stubs.</tspan></text>
+<g class="c14"><rect class="blink" x="20" y="359" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l15" x="20" y="393" xml:space="preserve"><tspan fill="#6b7280">│ </tspan><tspan fill="#c678dd">&lt;loop:approve/&gt;</tspan></text>
+<g class="c15"><rect class="blink" x="20" y="381" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l16" x="20" y="415" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">critic: </tspan><tspan fill="#98c379">approved</tspan></text>
+<g class="c16"><rect class="blink" x="20" y="403" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l17" x="20" y="437" xml:space="preserve"><tspan fill="#c678dd">▸ </tspan><tspan fill="#c8ccd4">verdict: </tspan><tspan fill="#98c379">done</tspan><tspan fill="#6b7280">  verified and approved</tspan></text>
+<g class="c17"><rect class="blink" x="20" y="425" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l18" x="20" y="459" xml:space="preserve"><tspan fill="#c8ccd4"> </tspan></text>
+<g class="c18"><rect class="blink" x="20" y="447" width="8" height="16" fill="#c8ccd4"/></g>
+<text class="l19" x="20" y="481" xml:space="preserve"><tspan fill="#98c379" font-weight="600">✓ done after 3 iterations, 2m14s, $0.29</tspan></text>
+<g class="c19"><rect class="blink" x="20" y="469" width="8" height="16" fill="#c8ccd4"/></g>
 </g>
+<rect x="0.5" y="0.5" width="759" height="509" rx="10" fill="none" stroke="#3a3f4b"/>
 </svg>
