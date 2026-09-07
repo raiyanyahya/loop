@@ -387,7 +387,7 @@ Release: bump the version, add a changelog entry, `git tag vX.Y.Z`, push the tag
 
 **Does it need git?** No, but keep/revert, protected-file restore, worktrees, and the critic's diff do. Without git, `loop` still tracks changes by walking the tree and reports what it would have reverted.
 
-**Why is the package called `theloop`?** The npm name `loop` belongs to an unrelated package, and `loop-cli` was unpublished by someone in 2022, which npm treats as permanently burned. `npm i -g @raiyanyahya/loop` installs the `loop` command.
+**Why is the package scoped?** The npm name `loop` belongs to an unrelated package, `loop-cli` is a name npm has permanently retired, and `theloop` is blocked as too similar to `the-loop`. `@raiyanyahya/loop` matches the GitHub repository exactly, and `npm i -g @raiyanyahya/loop` installs the `loop` command.
 
 **Windows?** It should work (no shell tricks, no native deps), but it is not tested there yet. Process-group signalling is Unix-only, so Ctrl-C handling is simpler on Windows.
 

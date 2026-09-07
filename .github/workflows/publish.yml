@@ -1,7 +1,7 @@
 name: Publish
 
 # Publishes to npm with trusted publishing (OIDC): no token, no secret, no 2FA bypass.
-# One-time setup on npmjs.com, package settings, Trusted Publisher: GitHub Actions,
+# One-time setup on npmjs.com, @raiyanyahya/loop package settings, Trusted Publisher: GitHub Actions,
 # user raiyanyahya, repository loop, workflow filename publish.yml. Provenance is automatic.
 
 on:

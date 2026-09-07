@@ -2,7 +2,7 @@
 
 ## 0.2.1
 
-- Package renamed to `theloop` (the command is still `loop`): `loop-cli` was unpublished by another account in 2022 and npm does not allow burned names to be reused, which is why the first publish failed.
+- Package published as `@raiyanyahya/loop` (the command is still `loop`). `loop` is taken, `loop-cli` was unpublished by another account in 2022 and npm never reuses such names, and `theloop` is rejected as too similar to `the-loop`; the scoped name matches the GitHub repository.
 - Tests run on Node 18 and 20 again: `npm test` now uses `scripts/test.js`, which lists the test files itself instead of relying on glob support that only Node 21+ has.
 - CI and the website deploy also trigger on `master`. Releases use npm trusted publishing instead of a token.
 
