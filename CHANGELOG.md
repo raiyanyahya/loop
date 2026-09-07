@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- First release published through npm trusted publishing (OIDC from GitHub Actions, no token). No code changes since 0.2.1.
+
 ## 0.2.1
 
 - Package published as `@raiyanyahya/loop` (the command is still `loop`). `loop` is taken, `loop-cli` was unpublished by another account in 2022 and npm never reuses such names, and `theloop` is rejected as too similar to `the-loop`; the scoped name matches the GitHub repository.

@@ -1,6 +1,6 @@
 {
   "name": "@raiyanyahya/loop",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Run Claude Code, Codex, or any agent in a loop from one markdown file. Memory, verified done, a critic, keep-or-revert, brakes.",
   "author": "Raiyan Yahya",
   "license": "MIT",
