@@ -1,0 +1,45 @@
+name: loop
+description: Run an agent loop from a Loopfile. Needs an agent CLI and its credentials in the job environment.
+branding:
+  icon: refresh-cw
+  color: blue
+inputs:
+  loopfile:
+    description: Path to the Loopfile (or a name that resolves to loops/<name>.md)
+    required: false
+    default: LOOP.md
+  agent:
+    description: Override the agent (claude, codex, gemini, ...)
+    required: false
+  max:
+    description: Override max iterations
+    required: false
+  extra:
+    description: Extra arguments for loop run (for example "--until \"npm test\" --quiet")
+    required: false
+    default: ''
+  version:
+    description: loop version to run with npx
+    required: false
+    default: latest
+outputs:
+  status:
+    description: done, stopped, stalled, stuck, waiting, or failed
+    value: ${{ steps.run.outputs.status }}
+runs:
+  using: composite
+  steps:
+    - id: run
+      shell: bash
+      run: |
+        set +e
+        args=("run" "${{ inputs.loopfile }}" --quiet)
+        [ -n "${{ inputs.agent }}" ] && args+=(--agent "${{ inputs.agent }}")
+        [ -n "${{ inputs.max }}" ] && args+=(--max "${{ inputs.max }}")
+        npx --yes loop-cli@${{ inputs.version }} "${args[@]}" ${{ inputs.extra }}
+        code=$?
+        status=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('.loop/state.json','utf8')).status)}catch{console.log('failed')}")
+        echo "status=$status" >> "$GITHUB_OUTPUT"
+        echo "loop finished: $status (exit $code)"
+        # 0 done, 1 stopped/failed, 2 stuck, 3 waiting for a human
+        exit $code

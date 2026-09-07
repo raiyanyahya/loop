@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Run Claude Code, Codex, Gemini CLI or any agent in a loop from one markdown file, with memory between runs, verified stopping, a critic, and brakes.">
+<title>loop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,800&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&display=swap">
+<style>
+  :root {
+    --paper: #EEF1F6; --paper-2: #E3E7F0; --ink: #121729; --ink-2: #454D68; --ink-3: #737B94; --line: #C9CFDC;
+    --accent: #2B44E8; --accent-ink: #FFFFFF; --accent-soft: #DDE2FF;
+    --term: #0C1224; --term-2: #121A33; --term-fg: #D7DEF2; --term-dim: #6F7A98; --term-line: #232C49;
+    --cyan: #7CE8FF; --mag: #F58BFF; --yel: #FFD166; --grn: #5EE39A; --red: #FF8A8A;
+    --letter-bg: #FBF6EA; --letter-ink: #2B2519; --letter-line: #E4D8BE; --letter-accent: #8A5A1A;
+    --code-bg: #FFFFFF; --code-line: #DCE1EC;
+    --sans: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0B0F1E; --paper-2: #131936; --ink: #E6EAF5; --ink-2: #AEB6CC; --ink-3: #7E879F; --line: #262E4A;
+      --accent: #8D9BFF; --accent-ink: #0B0F1E; --accent-soft: #1C2452;
+      --term: #060A16; --term-2: #0D1327; --term-fg: #D7DEF2; --term-dim: #6F7A98; --term-line: #1F2846;
+      --letter-bg: #211C12; --letter-ink: #F1E8D4; --letter-line: #3D3320; --letter-accent: #E3B76B;
+      --code-bg: #0F1529; --code-line: #232B47;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0B0F1E; --paper-2: #131936; --ink: #E6EAF5; --ink-2: #AEB6CC; --ink-3: #7E879F; --line: #262E4A;
+    --accent: #8D9BFF; --accent-ink: #0B0F1E; --accent-soft: #1C2452;
+    --term: #060A16; --term-2: #0D1327; --term-fg: #D7DEF2; --term-dim: #6F7A98; --term-line: #1F2846;
+    --letter-bg: #211C12; --letter-ink: #F1E8D4; --letter-line: #3D3320; --letter-accent: #E3B76B;
+    --code-bg: #0F1529; --code-line: #232B47;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 17px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  code, pre, kbd { font-family: var(--mono); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+  h1, h2, h3 { font-family: var(--sans); font-variation-settings: "opsz" 96; letter-spacing: -0.025em; text-wrap: balance; margin: 0; }
+  h2 { font-size: clamp(30px, 4.2vw, 46px); font-weight: 600; line-height: 1.08; }
+  h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
+  p { margin: 0; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .lede { color: var(--ink-2); font-size: 18px; max-width: 34em; }
+  .inline-code { font-family: var(--mono); font-size: 0.86em; background: var(--paper-2); padding: 0.12em 0.4em; border-radius: 4px; }
+
+  /* nav */
+  .nav { display: flex; align-items: center; gap: 28px; padding: 22px 0; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; text-decoration: none; font-size: 18px; letter-spacing: -0.01em; }
+  .mark { width: 26px; height: 26px; color: var(--accent); }
+  .mark.spin { animation: spin 1.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; font-size: 15px; color: var(--ink-2); }
+  .nav-links a { text-decoration: none; }
+  .nav-links a:hover { color: var(--ink); }
+  @media (max-width: 640px) { .nav-links { display: none; } }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: start; padding: 40px 0 72px; }
+  @media (max-width: 960px) { .hero { grid-template-columns: 1fr; gap: 36px; padding-top: 24px; } }
+  .hero h1 { font-size: clamp(46px, 7.2vw, 92px); font-weight: 800; line-height: 0.98; letter-spacing: -0.04em; font-variation-settings: "opsz" 96; }
+  .hero .lede { margin-top: 22px; }
+  .hero-cta { margin-top: 30px; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+  .cmd { display: inline-flex; align-items: center; gap: 14px; background: var(--term); color: var(--term-fg); border: 1px solid var(--term-line); border-radius: 10px; padding: 12px 12px 12px 18px; font-family: var(--mono); font-size: 15px; }
+  .cmd .dollar { color: var(--term-dim); }
+  .copy { font-family: var(--sans); font-size: 13px; font-weight: 600; background: var(--term-2); color: var(--term-fg); border: 1px solid var(--term-line); border-radius: 6px; padding: 6px 10px; cursor: pointer; transition: background 0.15s; }
+  .copy:hover { background: var(--term-line); }
+  .copy.done { color: var(--grn); }
+  .alt { color: var(--ink-2); font-size: 15px; }
+
+  /* terminal */
+  .term { background: var(--term); border: 1px solid var(--term-line); border-radius: 14px; color: var(--term-fg); box-shadow: 0 30px 60px -30px rgba(12, 18, 36, 0.45); overflow: hidden; }
+  .term-bar { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--term-line); font-family: var(--mono); font-size: 12.5px; color: var(--term-dim); }
+  .term-bar .title { flex: 1; }
+  .replay { background: none; border: 1px solid var(--term-line); color: var(--term-fg); font-family: var(--sans); font-size: 12.5px; font-weight: 600; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  .replay:hover { background: var(--term-2); }
+  .term-body { height: 460px; overflow-y: auto; padding: 16px 18px 24px; font-family: var(--mono); font-size: 13.5px; line-height: 1.6; scroll-behavior: smooth; overscroll-behavior: contain; }
+  @media (max-width: 960px) { .term-body { height: 400px; font-size: 12.5px; } }
+  .ln { white-space: pre-wrap; word-break: break-word; animation: appear 0.18s ease-out; }
+  @keyframes appear { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+  .ln.hdr { display: flex; align-items: center; gap: 8px; color: var(--cyan); margin: 14px 0 8px; }
+  .ln.hdr .rule { flex: 1; height: 1px; background: var(--term-line); }
+  .ln.kv { display: flex; gap: 12px; }
+  .ln.kv .k { color: var(--term-dim); width: 6ch; flex: none; }
+  .c { color: var(--cyan); } .m { color: var(--mag); } .y { color: var(--yel); } .g { color: var(--grn); } .d { color: var(--term-dim); } .r { color: var(--red); }
+  .ln.agent, .ln.tool { padding-left: 1.6ch; }
+  .ln.agent::before, .ln.tool::before { content: "│ "; color: var(--term-dim); margin-left: -1.6ch; }
+  .ln.tool .tn { font-weight: 500; color: var(--term-fg); }
+  .ln.verdict.reject { animation: appear 0.18s ease-out, flash 1.8s ease-out; border-radius: 4px; margin: 0 -6px; padding: 0 6px; }
+  @keyframes flash { 0% { background: rgba(245, 139, 255, 0.28); } 100% { background: transparent; } }
+  .ln.ok { color: var(--grn); font-weight: 500; margin-top: 12px; }
+  .ln.cmdline { color: var(--term-fg); }
+  .ln.cmdline .dollar { color: var(--term-dim); }
+  .cursor { display: inline-block; width: 0.6ch; height: 1.1em; background: var(--term-fg); vertical-align: text-bottom; margin-left: 2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* sections */
+  section { padding: 72px 0; border-top: 1px solid var(--line); }
+  .sec-head { max-width: 42em; margin-bottom: 40px; }
+  .sec-head .lede { margin-top: 14px; }
+
+  /* blind loop */
+  .blind { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: start; }
+  @media (max-width: 880px) { .blind { grid-template-columns: 1fr; gap: 32px; } }
+  .bash { background: var(--term); color: var(--term-fg); border: 1px solid var(--term-line); border-radius: 10px; padding: 18px 20px; font-family: var(--mono); font-size: 14.5px; overflow-x: auto; margin: 0; }
+  .bash .d { color: var(--term-dim); }
+  .gaps { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+  .gaps li { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 16px; align-items: start; }
+  .gaps li > span { display: flex; flex-direction: column; gap: 2px; }
+  @media (max-width: 480px) { .gaps li { grid-template-columns: 1fr; gap: 6px; } .gaps li > span { flex-direction: row; gap: 10px; align-items: baseline; } }
+  .gaps .lack { color: var(--ink-3); font-size: 14px; text-decoration: line-through; text-decoration-color: var(--ink-3); }
+  .gaps .fix { font-weight: 600; line-height: 1.3; }
+  .gaps p { color: var(--ink-2); font-size: 16px; }
+  .gaps p code { font-size: 0.86em; }
+
+  /* annotated loopfile */
+  .loopfile { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); border: 1px solid var(--code-line); border-radius: 12px; overflow: hidden; }
+  .lf-tab { grid-column: 1 / -1; background: var(--code-bg); border-bottom: 1px solid var(--code-line); padding: 10px 20px; font-family: var(--mono); font-size: 13px; color: var(--ink-3); }
+  .lf-tab b { color: var(--ink); font-weight: 500; }
+  .lf-row { display: contents; }
+  .lf-code { background: var(--code-bg); padding: 6px 20px; font-family: var(--mono); font-size: 14px; line-height: 1.6; white-space: pre; overflow-x: auto; color: var(--ink); }
+  .lf-code .k { color: var(--accent); } .lf-code .s { color: var(--ink-2); } .lf-code .cm { color: var(--ink-3); } .lf-code .h { font-weight: 500; }
+  .lf-note { padding: 7px 22px; color: var(--ink-2); font-size: 14.5px; line-height: 1.45; border-left: 1px solid var(--code-line); background: var(--paper); }
+  .lf-row:first-of-type .lf-code, .lf-row:first-of-type .lf-note { padding-top: 16px; }
+  .lf-row:last-of-type .lf-code, .lf-row:last-of-type .lf-note { padding-bottom: 18px; }
+  .lf-note:empty { padding: 0; }
+  @media (max-width: 820px) {
+    .loopfile { grid-template-columns: 1fr; }
+    .lf-note { border-left: 0; padding: 4px 20px 14px; background: var(--code-bg); font-size: 14px; }
+    .lf-note::before { content: "# "; font-family: var(--mono); color: var(--ink-3); }
+    .lf-note:empty::before { content: none; }
+    .lf-code { padding-bottom: 0; }
+  }
+
+  /* letter */
+  .letter-sec { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: start; }
+  @media (max-width: 880px) { .letter-sec { grid-template-columns: 1fr; gap: 32px; } }
+  .letter-sec .lede { margin-top: 14px; }
+  .letters { display: grid; gap: 18px; position: relative; }
+  .letter { background: var(--letter-bg); color: var(--letter-ink); border: 1px solid var(--letter-line); border-radius: 4px; padding: 26px 30px 28px; font-family: var(--serif); font-size: 19px; line-height: 1.5; box-shadow: 0 18px 40px -28px rgba(43, 37, 25, 0.5); }
+  .letter .from { font-family: var(--mono); font-style: normal; font-size: 12.5px; color: var(--letter-accent); margin-bottom: 14px; }
+  .letter p { font-style: italic; margin: 0; }
+  .letter p + p { margin-top: 0.7em; }
+  .letter em { font-style: normal; font-weight: 500; }
+  .letter.next { margin-left: 36px; }
+  @media (max-width: 480px) { .letter { padding: 20px 20px 22px; font-size: 17px; } .letter.next { margin-left: 14px; } }
+  .arrow { justify-self: start; margin-left: 12px; color: var(--ink-3); display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .arrow svg { width: 18px; height: 28px; }
+
+  /* verify flow */
+  .flow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; counter-reset: step; }
+  @media (max-width: 880px) { .flow { grid-template-columns: 1fr; gap: 0; } }
+  .step { padding: 24px 26px 26px 0; border-top: 2px solid var(--line); counter-increment: step; }
+  .step:first-child { border-top-color: var(--accent); }
+  .step h3::before { content: counter(step) ". "; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .step p { margin-top: 8px; color: var(--ink-2); font-size: 16px; }
+  .step pre { margin: 16px 0 0; background: var(--term); color: var(--term-fg); border: 1px solid var(--term-line); border-radius: 8px; padding: 12px 14px; font-size: 12.5px; line-height: 1.55; overflow-x: auto; white-space: pre-wrap; }
+  .step pre.paper { background: var(--code-bg); color: var(--ink); border-color: var(--code-line); font-family: var(--sans); font-size: 14px; }
+  .step pre.paper b { font-weight: 600; }
+  @media (max-width: 880px) { .step { padding-right: 0; } }
+
+  /* protocol */
+  .proto { width: 100%; border-collapse: collapse; font-size: 16px; }
+  .proto th { text-align: left; font-weight: 500; color: var(--ink-3); font-size: 14px; padding: 0 0 12px; border-bottom: 1px solid var(--line); }
+  .proto td { padding: 14px 24px 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-2); }
+  .proto td:first-child { font-family: var(--mono); font-size: 14px; color: var(--mag); white-space: nowrap; width: 1%; }
+  :root:not([data-theme="dark"]) .proto td:first-child { color: #A21FB9; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .proto td:first-child { color: var(--mag); } }
+  .proto td:last-child { padding-right: 0; }
+  .proto td code { font-size: 0.86em; background: var(--paper-2); padding: 0.1em 0.35em; border-radius: 4px; }
+  @media (max-width: 640px) { .proto td:first-child { white-space: normal; width: auto; } .proto td { display: block; padding: 6px 0; border: 0; } .proto tr { display: block; padding: 12px 0; border-bottom: 1px solid var(--line); } .proto thead { display: none; } }
+
+  /* shapes */
+  .shapes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 56px; }
+  @media (max-width: 720px) { .shapes { grid-template-columns: 1fr; } }
+  .shape { padding: 22px 0 26px; border-top: 1px solid var(--line); }
+  .shape p { margin-top: 6px; color: var(--ink-2); font-size: 16px; }
+  .shape pre { margin: 12px 0 0; font-size: 13px; line-height: 1.55; color: var(--ink); background: var(--code-bg); border: 1px solid var(--code-line); border-radius: 8px; padding: 10px 14px; overflow-x: auto; }
+  .shape pre .k { color: var(--accent); }
+
+  /* agents */
+  .agents { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px 40px; list-style: none; margin: 0; padding: 0; }
+  .agents li { display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .agents b { font-weight: 600; }
+  .agents code { font-size: 12.5px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .agents .note { margin-top: 20px; color: var(--ink-2); font-size: 16px; max-width: 46em; }
+
+  /* install */
+  .install { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: start; }
+  @media (max-width: 880px) { .install { grid-template-columns: 1fr; gap: 28px; } }
+  .install .lede { margin-top: 14px; }
+  .steps { display: grid; gap: 10px; }
+  .steps .cmd { width: 100%; justify-content: space-between; }
+  .steps .cmd .what { color: var(--term-dim); font-family: var(--sans); font-size: 13px; margin-left: auto; margin-right: 8px; }
+  @media (max-width: 560px) { .steps .cmd .what { display: none; } }
+
+  footer { border-top: 1px solid var(--line); padding: 32px 0 56px; color: var(--ink-3); font-size: 14.5px; display: flex; flex-wrap: wrap; gap: 8px 32px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .ln, .ln.verdict.reject { animation: none; }
+    .mark.spin { animation: none; }
+    .cursor { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="nav" aria-label="Primary">
+    <a class="brand" href="#top">
+      <svg class="mark" id="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/><path d="M20.5 3.5v5h-5"/></svg>
+      loop
+    </a>
+    <div class="nav-links">
+      <a href="#loopfile">Loopfile</a>
+      <a href="#letter">The letter</a>
+      <a href="#protocol">Protocol</a>
+      <a href="#install">Install</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div>
+      <h1>The loop, engineered.</h1>
+      <p class="lede">Runs Claude Code, Codex, Gemini CLI or any agent again and again from one markdown file. It remembers between runs, checks every claim of “done”, asks a critic, reverts what doesn't measure up, and knows when to stop.</p>
+      <div class="hero-cta">
+        <div class="cmd"><span><span class="dollar">$ </span>npm i -g loop-cli</span><button class="copy" data-copy="npm i -g loop-cli" type="button">Copy</button></div>
+        <p class="alt">Nothing to install yet? <span class="inline-code">npx loop-cli demo</span> runs a scripted agent through a real loop, no API key needed.</p>
+      </div>
+    </div>
+    <div class="term" aria-label="loop running in a terminal">
+      <div class="term-bar"><span class="title">greet-lib — loop run</span><button class="replay" id="replay" type="button">Replay</button></div>
+      <div class="term-body" id="term" aria-live="off"></div>
+    </div>
+  </header>
+
+  <section id="blind">
+    <div class="sec-head">
+      <h2>A bash loop is blind.</h2>
+      <p class="lede">This is how people run agents overnight today. It works. It also forgets everything between runs, believes the agent when it says it is finished, never stops on its own, leaves no record, and lets the agent edit the tests that judge it.</p>
+    </div>
+    <div class="blind">
+      <pre class="bash"><span class="d">$ </span>while :; do cat PROMPT.md | claude; done</pre>
+      <ul class="gaps">
+        <li><span><span class="lack">no memory</span> <span class="fix">the letter</span></span><p>Each iteration ends by writing a note to the next one. The loop puts it at the top of the next prompt.</p></li>
+        <li><span><span class="lack">no verification</span> <span class="fix">until</span></span><p>Done means a test passes, a checklist is complete, or both. A false claim is rejected with the failing output.</p></li>
+        <li><span><span class="lack">no brakes</span> <span class="fix">guards</span></span><p>Iterations, hours, dollars, and a stall detector for loops that stop changing anything.</p></li>
+        <li><span><span class="lack">no record</span> <span class="fix">the journal</span></span><p>Every prompt, output, changed file, and verdict, plus <code>loop log</code> and an HTML report to share.</p></li>
+        <li><span><span class="lack">blind trust</span> <span class="fix">critic, protect, revert</span></span><p>A second agent judges the diff, the tests can't be edited, and a metric loop reverts anything that doesn't measurably win.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="loopfile">
+    <div class="sec-head">
+      <h2>One file runs the loop.</h2>
+      <p class="lede">A Loopfile is YAML for the loop and markdown for the agent. Humans read it, agents read it, and the loop re-reads it every iteration, so you can edit the goal or tick a box while it runs.</p>
+    </div>
+    <div class="loopfile">
+      <div class="lf-tab"><b>LOOP.md</b> in your project</div>
+      <div class="lf-row"><div class="lf-code"><span class="cm">---</span>
+<span class="k">name</span>: search-api</div><div class="lf-note">Shown in the terminal header and in every commit message.</div></div>
+      <div class="lf-row"><div class="lf-code"><span class="k">agent</span>: [claude, codex]</div><div class="lf-note">Two agents take turns: Claude builds, Codex reviews. A single name is fine too.</div></div>
+      <div class="lf-row"><div class="lf-code"><span class="k">until</span>: [checklist, <span class="s">"npm test"</span>]</div><div class="lf-note">What done means. Every condition must hold: here, all boxes ticked and the tests green.</div></div>
+      <div class="lf-row"><div class="lf-code"><span class="k">critic</span>: codex
+<span class="k">protect</span>: [<span class="s">"test/**"</span>, SPEC.md]</div><div class="lf-note">A second agent reviews the diff in a fresh session before “done” counts. Protected files are restored if the worker touches them.</div></div>
+      <div class="lf-row"><div class="lf-code"><span class="k">memory</span>: NOTES.md</div><div class="lf-note">Durable notes the agent keeps across loops. The letter is for the next iteration; this is for every future one.</div></div>
+      <div class="lf-row"><div class="lf-code"><span class="k">max</span>: 30
+<span class="k">max_cost</span>: 20
+<span class="k">stall</span>: 3</div><div class="lf-note">Brakes. Thirty iterations, twenty dollars, or three iterations in a row that change nothing.</div></div>
+      <div class="lf-row"><div class="lf-code"><span class="k">git</span>: true</div><div class="lf-note">Commit after each iteration, so nothing is lost and every step is diffable.</div></div>
+      <div class="lf-row"><div class="lf-code"><span class="k">rituals</span>:
+  - <span class="k">every</span>: 5
+    <span class="k">prompt</span>: |
+      Review all work so far as a strict
+      reviewer. Fix what you find.
+<span class="cm">---</span></div><div class="lf-note">Every fifth iteration runs this instead of the goal.</div></div>
+      <div class="lf-row"><div class="lf-code">
+<span class="h"># Goal</span>
+
+Add full-text search to GET /posts. See SPEC.md.</div><div class="lf-note">The prompt. Plain markdown, handed to the agent every iteration along with the letter and the latest feedback.</div></div>
+      <div class="lf-row"><div class="lf-code">
+<span class="h"># Checklist</span>
+
+- [x] Migration: tsvector column and GIN index
+- [ ] q= query param, ranked results
+- [ ] Tests: ranking, empty query, injection
+- [ ] README section with examples</div><div class="lf-note">The agent ticks boxes as it goes. When they are all ticked and <span class="inline-code">npm test</span> passes, the loop ends.</div></div>
+    </div>
+  </section>
+
+  <section id="letter">
+    <div class="letter-sec">
+      <div>
+        <h2>Every iteration writes to the next.</h2>
+        <p class="lede">Each iteration is a fresh session with no memory. So before it ends, the agent writes a short letter to its next self: what it did, what to do next, what to avoid. The loop puts the letter at the top of the next prompt. It is the only memory that survives, and it turns a pile of amnesiac runs into one continuous worker.</p>
+        <p class="lede" style="margin-top:14px"><span class="inline-code">loop letter</span> shows the current one.</p>
+      </div>
+      <div class="letters">
+        <div class="letter">
+          <div class="from">.loop/letter.md, written by iteration 1</div>
+          <p>Implemented <em>greet()</em> in greet.js and ticked the first checklist item.</p>
+          <p>Next: <em>shout()</em>. test.js expects uppercase plus an exclamation mark. Then the README.</p>
+          <p>Avoid: do not touch test.js, it is the spec.</p>
+        </div>
+        <div class="arrow" aria-hidden="true"><svg viewBox="0 0 18 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 1v22M3 17l6 6 6-6"/></svg><span>read by iteration 2</span></div>
+        <div class="letter next">
+          <div class="from">.loop/letter.md, written by iteration 2</div>
+          <p>Added <em>shout()</em>. Both functions pass test.js. Ticked item 2.</p>
+          <p>Next: the README is still open. Write usage for both functions, then tick it. Last time the loop rejected my “done” because I skipped the checklist, so check it before claiming.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="verify">
+    <div class="sec-head">
+      <h2>Done is a claim. The loop checks.</h2>
+      <p class="lede">An agent will say it is finished. The loop treats that as a claim: it runs the checks, defends the files the agent must not touch, asks a critic, and only then agrees. If the claim fails, the next iteration is told exactly why.</p>
+    </div>
+    <div class="flow">
+      <div class="step">
+        <h3>The agent claims done</h3>
+        <p>On its own line, as the last thing it says.</p>
+<pre><span class="d">│</span> Both functions pass. I believe the work is complete.
+<span class="d">│</span> <span class="m">&lt;loop:done/&gt;</span></pre>
+      </div>
+      <div class="step">
+        <h3>The loop verifies</h3>
+        <p>Every <span class="inline-code">until</span> condition runs. Protected files are restored. In a metric loop, anything that didn't improve is reverted.</p>
+<pre><span class="m">▸</span> check: node test.js → <span class="g">pass</span>
+<span class="m">▸</span> verdict: <span class="c">continue</span>  done rejected: 1 checklist item still open</pre>
+      </div>
+      <div class="step">
+        <h3>The critic judges</h3>
+        <p>A separate session reads the goal, the diff, and the letter. It can veto.</p>
+<pre><span class="m">▸</span> critic <span class="d">(codex)</span>
+<span class="d">│</span> <span class="m">&lt;loop:reject&gt;</span>1. No test for the empty query.<span class="m">&lt;/loop:reject&gt;</span></pre>
+      </div>
+      <div class="step">
+        <h3>The next iteration knows</h3>
+        <p>The rejection, the failing output, and the critic's reasons land in the next prompt, with a history of every attempt.</p>
+<pre class="paper"><b>The loop rejected your last “done”</b>
+– 1 checklist item still open
+– the critic rejected the work: 1. No test for the empty query.</pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="protocol">
+    <div class="sec-head">
+      <h2>The agent can talk back.</h2>
+      <p class="lede">A handful of tags, written in plain text on their own line, let the agent steer its own loop. Because they only count at the start of a line, the agent can talk about them without triggering them.</p>
+    </div>
+    <table class="proto">
+      <thead><tr><th>the agent writes</th><th>what happens</th></tr></thead>
+      <tbody>
+        <tr><td>&lt;loop:done/&gt;</td><td>The loop verifies the claim against every <code>until</code> condition and ends if they hold.</td></tr>
+        <tr><td>&lt;loop:stuck&gt;why&lt;/loop:stuck&gt;</td><td>The loop stops and shows the reason. Fix what it needs, then <code>loop run</code> continues with the letter intact.</td></tr>
+        <tr><td>&lt;loop:ask&gt;question&lt;/loop:ask&gt;</td><td>In a terminal, you are asked right there. Unattended, the loop parks itself; <code>loop answer "..."</code> and <code>loop run</code> resume it with your reply in the prompt.</td></tr>
+        <tr><td>&lt;loop:handoff&gt;codex&lt;/loop:handoff&gt;</td><td>The next iteration runs on a different agent.</td></tr>
+        <tr><td>&lt;loop:sleep&gt;10m&lt;/loop:sleep&gt;</td><td>Wait before the next iteration, for example while a deploy settles.</td></tr>
+        <tr><td>&lt;loop:note&gt;text&lt;/loop:note&gt;</td><td>Leave a note in the journal for whoever reads the log later.</td></tr>
+        <tr><td>&lt;loop:approve/&gt; &lt;loop:reject&gt;why&lt;/loop:reject&gt;</td><td>The critic's verdict. A rejection blocks “done” and its reasons feed the next iteration.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="shapes">
+    <div class="sec-head">
+      <h2>Loops come in shapes.</h2>
+      <p class="lede"><span class="inline-code">loop init</span> asks what kind of loop you want: finish, optimize, maintain, or research. Each template is a few lines of frontmatter you can read in full.</p>
+    </div>
+    <div class="shapes">
+      <div class="shape"><h3>Relay</h3><p>Two agents alternate. One builds, the other reviews the diff and tightens the tests, until both agree and the suite is green.</p><pre><span class="k">agent</span>: [claude, codex]
+<span class="k">until</span>: [done, "npm test"]</pre></div>
+      <div class="shape"><h3>Overnight</h3><p>No “done” at all. Eight hours, a commit per iteration on its own branch, and a review ritual every fifth run.</p><pre><span class="k">until</span>: never
+<span class="k">max_time</span>: 8h
+<span class="k">git</span>: { commit: true, branch: loop/overnight }</pre></div>
+      <div class="shape"><h3>Fix the build</h3><p>Green is done. No claim from the agent needed; the loop ends the moment the command exits 0.</p><pre>loop run -p "Make CI pass. Fix root causes." --until "npm test"</pre></div>
+      <div class="shape"><h3>Optimize</h3><p>One experiment per iteration. The loop measures, keeps the change only if the number improves, and reverts the rest with a note of what was tried.</p><pre><span class="k">metric</span>: "node bench.js"
+<span class="k">direction</span>: min
+<span class="k">keep</span>: improve</pre></div>
+      <div class="shape"><h3>Plan, then build</h3><p>Iteration one only plans. Then one checklist item per iteration, tests protected, notes kept, and a critic before done.</p><pre><span class="k">rituals</span>: [{ at: 1, prompt: "Plan. Do not code." }]
+<span class="k">protect</span>: ["test/**"]
+<span class="k">critic</span>: same</pre></div>
+      <div class="shape"><h3>Not code at all</h3><p>Deepen a report a little each iteration, with a checklist for outline, sources, counterarguments, and a final edit.</p><pre><span class="k">until</span>: checklist
+<span class="k">max</span>: 12</pre></div>
+    </div>
+  </section>
+
+  <section id="agents">
+    <div class="sec-head">
+      <h2>Works with the agents you already have.</h2>
+      <p class="lede">Each one runs in its non-interactive mode with permissions bypassed, because that is what a loop is for. Run loops in a container, a VM, or a repository you can afford to reset.</p>
+    </div>
+    <ul class="agents">
+      <li><b>Claude Code</b><code>claude -p --output-format stream-json --dangerously-skip-permissions</code></li>
+      <li><b>Codex CLI</b><code>codex exec --dangerously-bypass-approvals-and-sandbox -</code></li>
+      <li><b>Gemini CLI</b><code>gemini --yolo -p &lt;prompt&gt;</code></li>
+      <li><b>Aider</b><code>aider --message-file &lt;prompt&gt; --yes-always</code></li>
+      <li><b>OpenCode</b><code>opencode run &lt;prompt&gt;</code></li>
+      <li><b>GitHub Copilot CLI</b><code>copilot -p &lt;prompt&gt; --allow-all-tools</code></li>
+      <li><b>Amp</b><code>amp -x --dangerously-allow-all</code></li>
+      <li><b>Goose</b><code>goose run -i &lt;prompt&gt;</code></li>
+      <li><b>Cursor Agent</b><code>cursor-agent -p &lt;prompt&gt; --force</code></li>
+      <li><b>Anything else</b><code>command: "my-agent --auto {promptfile}"</code></li>
+    </ul>
+    <p class="note" style="margin-top:20px;color:var(--ink-2);font-size:16px;max-width:46em">Claude Code reports cost per session, so with it the loop shows spend in every header and stops at <span class="inline-code">max_cost</span>. <span class="inline-code">loop doctor</span> lists what is installed; <span class="inline-code">loop run --dry</span> prints the exact command before anything is spent.</p>
+  </section>
+
+  <section id="install">
+    <div class="install">
+      <div>
+        <h2>Start a loop.</h2>
+        <p class="lede">Zero dependencies. Node 18 or newer. MIT licensed. Ctrl-C once finishes the current iteration so the letter gets written; twice kills the agent. Also a GitHub Action and a Claude Code skill.</p>
+      </div>
+      <div class="steps">
+        <div class="cmd"><span><span class="dollar">$ </span>npm i -g loop-cli</span><span class="what">install once</span><button class="copy" data-copy="npm i -g loop-cli" type="button">Copy</button></div>
+        <div class="cmd"><span><span class="dollar">$ </span>loop init</span><span class="what">asks what kind of loop, writes LOOP.md</span><button class="copy" data-copy="loop init" type="button">Copy</button></div>
+        <div class="cmd"><span><span class="dollar">$ </span>loop run</span><span class="what">go</span><button class="copy" data-copy="loop run" type="button">Copy</button></div>
+        <div class="cmd"><span><span class="dollar">$ </span>npx loop-cli demo</span><span class="what">see it first, nothing to install</span><button class="copy" data-copy="npx loop-cli demo" type="button">Copy</button></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>⟲ loop</span>
+    <span>Loop engineering for AI agents.</span>
+    <span>MIT license</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var term = document.getElementById('term');
+  var mark = document.getElementById('mark');
+  var replayBtn = document.getElementById('replay');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Each entry: [delay before (ms), kind, text or parts]
+  var script = [
+    [0, 'cmd', 'loop run'],
+    [0, 'blank'],
+    [0, 'raw', '<span class="c">⟲ loop</span> <span class="d">v0.1.0</span>'],
+    [0, 'blank'],
+    [0, 'kv', ['loop', 'greet-lib']],
+    [0, 'kv', ['agent', 'claude']],
+    [0, 'kv', ['until', 'every checklist item is ticked AND <span class="d">`</span>node test.js<span class="d">`</span> exits 0 AND the critic approves']],
+    [0, 'kv', ['protect', 'test.js']],
+    [0, 'kv', ['guards', '25 iterations · 8h00m · stall after 3 idle']],
+    [0, 'kv', ['file', 'LOOP.md  <span class="d">(0/3 ticked)</span>']],
+    [700, 'hdr', ['iteration 1/25', 'claude · 0s']],
+    [300, 'step', '<span class="m">▸</span> <b>claude</b> <span class="d">(claude -p --output-format stream-json …)</span>'],
+    [900, 'agent', 'No letter yet, so this is the first iteration. The checklist has three open items and node test.js fails on both functions.'],
+    [700, 'tool', ['Read', 'test.js']],
+    [800, 'tool', ['Write', 'greet.js']],
+    [700, 'tool', ['Edit', 'LOOP.md']],
+    [600, 'tool', ['Write', '.loop/letter.md']],
+    [500, 'agent', 'greet() is in and ticked. Leaving shout() for the next iteration.'],
+    [500, 'step', '<span class="m">▸</span> 2 files changed · 48s · $0.11 · 4 tool calls  <span class="d">LOOP.md, greet.js</span>'],
+    [300, 'step', '<span class="m">▸</span> letter: <i>Implemented greet(). Next: shout(), then the README.</i>'],
+    [600, 'step', '<span class="m">▸</span> check: <span class="d">node test.js</span> → <span class="y">exit 1</span> <span class="d">(29ms)</span>'],
+    [300, 'verdict', ['continue', '2 checklist items still open; node test.js exited 1', false]],
+    [1100, 'hdr', ['iteration 2/25', 'claude · 51s · $0.11']],
+    [300, 'step', '<span class="m">▸</span> <b>claude</b>'],
+    [900, 'agent', 'The letter says shout() is next and test.js is the spec. Adding it.'],
+    [700, 'tool', ['Edit', 'greet.js']],
+    [800, 'tool', ['Bash', 'node test.js']],
+    [600, 'tool', ['Edit', 'LOOP.md']],
+    [600, 'agent', 'Both functions pass. I believe the work is complete.'],
+    [400, 'sig', '&lt;loop:done/&gt;'],
+    [500, 'step', '<span class="m">▸</span> 2 files changed · 40s · $0.09 · 3 tool calls  <span class="d">LOOP.md, greet.js</span>'],
+    [600, 'step', '<span class="m">▸</span> check: <span class="d">node test.js</span> → <span class="g">pass</span> <span class="d">(31ms)</span>'],
+    [400, 'verdict', ['continue', 'done rejected: 1 checklist item still open', true]],
+    [1300, 'hdr', ['iteration 3/25', 'claude · 1m33s · $0.20']],
+    [300, 'step', '<span class="m">▸</span> <b>claude</b>'],
+    [900, 'agent', 'The loop rejected my “done”: the README item is still open. Fair. Writing it now.'],
+    [800, 'tool', ['Write', 'README.md']],
+    [600, 'tool', ['Edit', 'LOOP.md']],
+    [600, 'tool', ['Write', '.loop/letter.md']],
+    [400, 'sig', '&lt;loop:done/&gt;'],
+    [500, 'step', '<span class="m">▸</span> 2 files changed · 41s · $0.09 · 3 tool calls  <span class="d">LOOP.md, README.md</span>'],
+    [600, 'step', '<span class="m">▸</span> check: <span class="d">node test.js</span> → <span class="g">pass</span> <span class="d">(30ms)</span>'],
+    [500, 'step', '<span class="m">▸</span> <b>critic</b> <span class="d">(claude, fresh session)</span>'],
+    [900, 'agent', 'Read the diff against the goal. greet() and shout() match test.js, the README documents both, tests untouched, no stubs.'],
+    [500, 'sig', '&lt;loop:approve/&gt;'],
+    [300, 'step', '<span class="m">▸</span> critic: <span class="g">approved</span>'],
+    [300, 'verdict', ['done', 'verified and approved', false]],
+    [700, 'ok', '✓ done after 3 iterations · 2m14s · $0.29'],
+    [200, 'raw', '<span class="d">journal: .loop/runs/2026-09-07_19-12-39  ·  loop log  ·  loop report</span>']
+  ];
+
+  function el(kind, html) {
+    var d = document.createElement('div');
+    d.className = 'ln ' + kind;
+    d.innerHTML = html;
+    return d;
+  }
+  function render(entry) {
+    var kind = entry[1], v = entry[2];
+    switch (kind) {
+      case 'cmd': return el('cmdline', '<span class="dollar">$ </span>' + v);
+      case 'blank': return el('blank', '&nbsp;');
+      case 'raw': return el('raw', v);
+      case 'kv': return el('kv', '<span class="k">' + v[0] + '</span><span>' + v[1] + '</span>');
+      case 'hdr': return el('hdr', '<span>─── ' + v[0] + '</span><span class="rule"></span><span>' + v[1] + ' ───</span>');
+      case 'step': return el('step', v);
+      case 'agent': return el('agent', v);
+      case 'tool': return el('tool', '<span class="y">⚙</span> <span class="tn">' + v[0] + '</span>  <span class="d">' + v[1] + '</span>');
+      case 'sig': return el('agent', '<span class="m">' + v + '</span>');
+      case 'verdict': return el('verdict' + (v[2] ? ' reject' : ''), '<span class="m">▸</span> verdict: <span class="' + (v[0] === 'done' ? 'g' : 'c') + '">' + v[0] + '</span>' + (v[1] ? '  <span class="d">' + v[1] + '</span>' : ''));
+      case 'ok': return el('ok', v);
+    }
+    return el('raw', '');
+  }
+
+  var timer = null, cursor = null;
+  function stop() { if (timer) { clearTimeout(timer); timer = null; } if (cursor && cursor.parentNode) cursor.parentNode.removeChild(cursor); cursor = null; mark.classList.remove('spin'); }
+  function play() {
+    stop();
+    term.innerHTML = '';
+    if (reduce) {
+      for (var i = 0; i < script.length; i++) term.appendChild(render(script[i]));
+      term.scrollTop = term.scrollHeight;
+      return;
+    }
+    // Static first frame: the banner is visible immediately.
+    var i = 0;
+    while (i < script.length && script[i][0] === 0) { term.appendChild(render(script[i])); i++; }
+    cursor = document.createElement('span'); cursor.className = 'cursor';
+    term.appendChild(cursor);
+    mark.classList.add('spin');
+    function next() {
+      if (i >= script.length) { stop(); return; }
+      var entry = script[i++];
+      timer = setTimeout(function () {
+        term.insertBefore(render(entry), cursor);
+        term.scrollTop = term.scrollHeight;
+        next();
+      }, entry[0]);
+    }
+    next();
+  }
+  replayBtn.addEventListener('click', play);
+  play();
+
+  // copy buttons
+  var buttons = document.querySelectorAll('.copy');
+  for (var b = 0; b < buttons.length; b++) {
+    buttons[b].addEventListener('click', function (e) {
+      var btn = e.currentTarget, text = btn.getAttribute('data-copy');
+      var done = function () { btn.textContent = 'Copied'; btn.classList.add('done'); setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1400); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, done);
+      else { var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (err) {} document.body.removeChild(ta); done(); }
+    });
+  }
+})();
+</script>
+</body>
+</html>

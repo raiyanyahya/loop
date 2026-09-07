@@ -1,0 +1,6 @@
+{
+  "name": "loop",
+  "description": "Write and run Loopfiles: agent loops with memory, verified done, a critic, and brakes.",
+  "version": "0.2.0",
+  "author": { "name": "loop contributors" }
+}

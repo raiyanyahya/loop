@@ -1,0 +1,41 @@
+{
+  "name": "loop-cli",
+  "version": "0.2.0",
+  "description": "Loop engineering for AI agents. One file, any agent, until it's done.",
+  "type": "module",
+  "bin": {
+    "loop": "bin/loop.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "templates",
+    "skills",
+    ".claude-plugin",
+    "action.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "demo": "node bin/loop.js demo"
+  },
+  "keywords": [
+    "agent",
+    "agentic",
+    "loop",
+    "claude-code",
+    "codex",
+    "gemini-cli",
+    "aider",
+    "autonomous",
+    "ralph",
+    "loop-engineering",
+    "ai",
+    "cli"
+  ],
+  "license": "MIT"
+}
