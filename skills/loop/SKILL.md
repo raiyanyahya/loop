@@ -5,7 +5,7 @@ description: Use when the user wants to run an agent in a loop, set up an overni
 
 # loop
 
-`loop` runs an agent CLI (claude, codex, gemini, aider, ...) repeatedly from one markdown file until a verifier says the work is done. Install with `npm i -g theloop`. Check `loop doctor` first.
+`loop` runs an agent CLI (claude, codex, gemini, aider, ...) repeatedly from one markdown file until a verifier says the work is done. Install with `npm i -g @raiyanyahya/loop`. Check `loop doctor` first.
 
 ## Writing a Loopfile
 
