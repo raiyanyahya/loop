@@ -21,7 +21,8 @@
   },
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
-    "demo": "node bin/loop.js demo"
+    "demo": "node bin/loop.js demo",
+    "demo:svg": "node scripts/demo-svg.js"
   },
   "keywords": [
     "agent",

@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="510" viewBox="0 0 760 510" role="img" aria-label="loop run: iteration 3 of 25 on claude. The agent finishes the README, declares done, the checks pass, git commits, the critic approves, verdict done.">
+<title>loop run, replayed</title>
+<defs>
+  <filter id="glow" x="-5%" y="-50%" width="110%" height="200%"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<style>
+text { font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace; font-size: 13px; }
+.glow { filter: url(#glow); }
+.l0{opacity:0;animation:a0 15800ms linear infinite}@keyframes a0{0%{opacity:0}3.797%{opacity:0}3.807%{opacity:1}100%{opacity:1}}
+.c0{opacity:0;animation:c0 15800ms linear infinite}@keyframes c0{0%{opacity:0}0.000%{opacity:0}0.010%{opacity:1}3.797%{opacity:1}3.807%{opacity:0}100%{opacity:0}}
+.l1{opacity:0;animation:a1 15800ms linear infinite}@keyframes a1{0%{opacity:0}5.063%{opacity:0}5.073%{opacity:1}100%{opacity:1}}
+.c1{opacity:0;animation:c1 15800ms linear infinite}@keyframes c1{0%{opacity:0}3.797%{opacity:0}3.807%{opacity:1}5.063%{opacity:1}5.073%{opacity:0}100%{opacity:0}}
+.l2{opacity:0;animation:a2 15800ms linear infinite}@keyframes a2{0%{opacity:0}9.494%{opacity:0}9.504%{opacity:1}100%{opacity:1}}
+.c2{opacity:0;animation:c2 15800ms linear infinite}@keyframes c2{0%{opacity:0}5.063%{opacity:0}5.073%{opacity:1}9.494%{opacity:1}9.504%{opacity:0}100%{opacity:0}}
+.l3{opacity:0;animation:a3 15800ms linear infinite}@keyframes a3{0%{opacity:0}12.658%{opacity:0}12.668%{opacity:1}100%{opacity:1}}
+.c3{opacity:0;animation:c3 15800ms linear infinite}@keyframes c3{0%{opacity:0}9.494%{opacity:0}9.504%{opacity:1}12.658%{opacity:1}12.668%{opacity:0}100%{opacity:0}}
+.l4{opacity:0;animation:a4 15800ms linear infinite}@keyframes a4{0%{opacity:0}15.823%{opacity:0}15.833%{opacity:1}100%{opacity:1}}
+.c4{opacity:0;animation:c4 15800ms linear infinite}@keyframes c4{0%{opacity:0}12.658%{opacity:0}12.668%{opacity:1}15.823%{opacity:1}15.833%{opacity:0}100%{opacity:0}}
+.l5{opacity:0;animation:a5 15800ms linear infinite}@keyframes a5{0%{opacity:0}20.253%{opacity:0}20.263%{opacity:1}100%{opacity:1}}
+.c5{opacity:0;animation:c5 15800ms linear infinite}@keyframes c5{0%{opacity:0}15.823%{opacity:0}15.833%{opacity:1}20.253%{opacity:1}20.263%{opacity:0}100%{opacity:0}}
+.l6{opacity:0;animation:a6 15800ms linear infinite}@keyframes a6{0%{opacity:0}24.684%{opacity:0}24.694%{opacity:1}100%{opacity:1}}
+.c6{opacity:0;animation:c6 15800ms linear infinite}@keyframes c6{0%{opacity:0}20.253%{opacity:0}20.263%{opacity:1}24.684%{opacity:1}24.694%{opacity:0}100%{opacity:0}}
+.l7{opacity:0;animation:a7 15800ms linear infinite}@keyframes a7{0%{opacity:0}29.747%{opacity:0}29.757%{opacity:1}100%{opacity:1}}
+.c7{opacity:0;animation:c7 15800ms linear infinite}@keyframes c7{0%{opacity:0}24.684%{opacity:0}24.694%{opacity:1}29.747%{opacity:1}29.757%{opacity:0}100%{opacity:0}}
+.l8{opacity:0;animation:a8 15800ms linear infinite}@keyframes a8{0%{opacity:0}33.544%{opacity:0}33.554%{opacity:1}100%{opacity:1}}
+.c8{opacity:0;animation:c8 15800ms linear infinite}@keyframes c8{0%{opacity:0}29.747%{opacity:0}29.757%{opacity:1}33.544%{opacity:1}33.554%{opacity:0}100%{opacity:0}}
+.l9{opacity:0;animation:a9 15800ms linear infinite}@keyframes a9{0%{opacity:0}37.342%{opacity:0}37.352%{opacity:1}100%{opacity:1}}
+.c9{opacity:0;animation:c9 15800ms linear infinite}@keyframes c9{0%{opacity:0}33.544%{opacity:0}33.554%{opacity:1}37.342%{opacity:1}37.352%{opacity:0}100%{opacity:0}}
+.l10{opacity:0;animation:a10 15800ms linear infinite}@keyframes a10{0%{opacity:0}41.772%{opacity:0}41.782%{opacity:1}100%{opacity:1}}
+.c10{opacity:0;animation:c10 15800ms linear infinite}@keyframes c10{0%{opacity:0}37.342%{opacity:0}37.352%{opacity:1}41.772%{opacity:1}41.782%{opacity:0}100%{opacity:0}}
+.l11{opacity:0;animation:a11 15800ms linear infinite}@keyframes a11{0%{opacity:0}45.570%{opacity:0}45.580%{opacity:1}100%{opacity:1}}
+.c11{opacity:0;animation:c11 15800ms linear infinite}@keyframes c11{0%{opacity:0}41.772%{opacity:0}41.782%{opacity:1}45.570%{opacity:1}45.580%{opacity:0}100%{opacity:0}}
+.l12{opacity:0;animation:a12 15800ms linear infinite}@keyframes a12{0%{opacity:0}50.000%{opacity:0}50.010%{opacity:1}100%{opacity:1}}
+.c12{opacity:0;animation:c12 15800ms linear infinite}@keyframes c12{0%{opacity:0}45.570%{opacity:0}45.580%{opacity:1}50.000%{opacity:1}50.010%{opacity:0}100%{opacity:0}}
+.l13{opacity:0;animation:a13 15800ms linear infinite}@keyframes a13{0%{opacity:0}52.848%{opacity:0}52.858%{opacity:1}100%{opacity:1}}
+.c13{opacity:0;animation:c13 15800ms linear infinite}@keyframes c13{0%{opacity:0}50.000%{opacity:0}50.010%{opacity:1}52.848%{opacity:1}52.858%{opacity:0}100%{opacity:0}}
+.l14{opacity:0;animation:a14 15800ms linear infinite}@keyframes a14{0%{opacity:0}55.696%{opacity:0}55.706%{opacity:1}100%{opacity:1}}
+.c14{opacity:0;animation:c14 15800ms linear infinite}@keyframes c14{0%{opacity:0}52.848%{opacity:0}52.858%{opacity:1}55.696%{opacity:1}55.706%{opacity:0}100%{opacity:0}}
+.l15{opacity:0;animation:a15 15800ms linear infinite}@keyframes a15{0%{opacity:0}60.759%{opacity:0}60.769%{opacity:1}100%{opacity:1}}
+.c15{opacity:0;animation:c15 15800ms linear infinite}@keyframes c15{0%{opacity:0}55.696%{opacity:0}55.706%{opacity:1}60.759%{opacity:1}60.769%{opacity:0}100%{opacity:0}}
+.l16{opacity:0;animation:a16 15800ms linear infinite}@keyframes a16{0%{opacity:0}63.924%{opacity:0}63.934%{opacity:1}100%{opacity:1}}
+.c16{opacity:0;animation:c16 15800ms linear infinite}@keyframes c16{0%{opacity:0}60.759%{opacity:0}60.769%{opacity:1}63.924%{opacity:1}63.934%{opacity:0}100%{opacity:0}}
+.l17{opacity:0;animation:a17 15800ms linear infinite}@keyframes a17{0%{opacity:0}68.987%{opacity:0}68.997%{opacity:1}100%{opacity:1}}
+.c17{opacity:0;animation:c17 15800ms linear infinite}@keyframes c17{0%{opacity:0}63.924%{opacity:0}63.934%{opacity:1}68.987%{opacity:1}68.997%{opacity:0}100%{opacity:0}}
+.l18{opacity:0;animation:a18 15800ms linear infinite}@keyframes a18{0%{opacity:0}70.886%{opacity:0}70.896%{opacity:1}100%{opacity:1}}
+.c18{opacity:0;animation:c18 15800ms linear infinite}@keyframes c18{0%{opacity:0}68.987%{opacity:0}68.997%{opacity:1}70.886%{opacity:1}70.896%{opacity:0}100%{opacity:0}}
+.l19{opacity:0;animation:a19 15800ms linear infinite}@keyframes a19{0%{opacity:0}74.684%{opacity:0}74.694%{opacity:1}100%{opacity:1}}
+.c19{opacity:0;animation:c19 15800ms linear infinite}@keyframes c19{0%{opacity:0}70.886%{opacity:0}70.896%{opacity:1}74.684%{opacity:1}74.694%{opacity:0}100%{opacity:0}}
+.blink{animation:blink 1s step-end infinite}@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+</style>
+<rect width="760" height="510" fill="#050805"/>
+<text x="22" y="17" fill="#55a061">$ loop run</text>
+<rect x="22" y="26" width="716" height="478" fill="#060d06" stroke="#1e4526"/>
+<g transform="translate(14, 10)">
+<text class="l0 glow" x="26" y="72" fill="#55a061" xml:space="preserve">─── iteration 3/25 ─────────────── claude · 1m33s · $0.20 ───</text>
+<g class="c0"><rect class="blink" x="26" y="60" width="8" height="15" fill="#3dff70"/></g>
+<text class="l1 glow" x="26" y="94" fill="#55a061" xml:space="preserve"> </text>
+<g class="c1"><rect class="blink" x="26" y="82" width="8" height="15" fill="#3dff70"/></g>
+<text class="l2 glow" x="26" y="116" fill="#9fe8a9" xml:space="preserve">▸ claude (claude -p --output-format stream-json ...)</text>
+<g class="c2"><rect class="blink" x="26" y="104" width="8" height="15" fill="#3dff70"/></g>
+<text class="l3 glow" x="26" y="138" fill="#5da368" xml:space="preserve">│ The loop rejected my "done": the README item is still</text>
+<g class="c3"><rect class="blink" x="26" y="126" width="8" height="15" fill="#3dff70"/></g>
+<text class="l4 glow" x="26" y="160" fill="#5da368" xml:space="preserve">│ open. Writing it now.</text>
+<g class="c4"><rect class="blink" x="26" y="148" width="8" height="15" fill="#3dff70"/></g>
+<text class="l5 glow" x="26" y="182" fill="#ffd24d" xml:space="preserve">│ ⚙ Write README.md</text>
+<g class="c5"><rect class="blink" x="26" y="170" width="8" height="15" fill="#3dff70"/></g>
+<text class="l6 glow" x="26" y="204" fill="#ffd24d" xml:space="preserve">│ ⚙ Edit  LOOP.md</text>
+<g class="c6"><rect class="blink" x="26" y="192" width="8" height="15" fill="#3dff70"/></g>
+<text class="l7 glow" x="26" y="226" fill="#b6ffca" xml:space="preserve">│ &lt;loop:done/&gt;</text>
+<g class="c7"><rect class="blink" x="26" y="214" width="8" height="15" fill="#3dff70"/></g>
+<text class="l8 glow" x="26" y="248" fill="#9fe8a9" xml:space="preserve">▸ 2 files changed, 41s, $0.09, 3 tool calls  LOOP.md, README.md</text>
+<g class="c8"><rect class="blink" x="26" y="236" width="8" height="15" fill="#3dff70"/></g>
+<text class="l9 glow" x="26" y="270" fill="#9fe8a9" xml:space="preserve">▸ letter: Wrote README.md and ticked the last item.</text>
+<g class="c9"><rect class="blink" x="26" y="258" width="8" height="15" fill="#3dff70"/></g>
+<text class="l10 glow" x="26" y="292" fill="#3dff70" xml:space="preserve">▸ check: node test.js -&gt; pass (30ms)</text>
+<g class="c10"><rect class="blink" x="26" y="280" width="8" height="15" fill="#3dff70"/></g>
+<text class="l11 glow" x="26" y="314" fill="#9fe8a9" xml:space="preserve">▸ git: committed 06c6eae</text>
+<g class="c11"><rect class="blink" x="26" y="302" width="8" height="15" fill="#3dff70"/></g>
+<text class="l12 glow" x="26" y="336" fill="#9fe8a9" xml:space="preserve">▸ critic (claude)</text>
+<g class="c12"><rect class="blink" x="26" y="324" width="8" height="15" fill="#3dff70"/></g>
+<text class="l13 glow" x="26" y="358" fill="#5da368" xml:space="preserve">│ Read the diff against the goal. Tests cover both</text>
+<g class="c13"><rect class="blink" x="26" y="346" width="8" height="15" fill="#3dff70"/></g>
+<text class="l14 glow" x="26" y="380" fill="#5da368" xml:space="preserve">│ functions; README matches. No stubs.</text>
+<g class="c14"><rect class="blink" x="26" y="368" width="8" height="15" fill="#3dff70"/></g>
+<text class="l15 glow" x="26" y="402" fill="#b6ffca" xml:space="preserve">│ &lt;loop:approve/&gt;</text>
+<g class="c15"><rect class="blink" x="26" y="390" width="8" height="15" fill="#3dff70"/></g>
+<text class="l16 glow" x="26" y="424" fill="#9fe8a9" xml:space="preserve">▸ critic: approved</text>
+<g class="c16"><rect class="blink" x="26" y="412" width="8" height="15" fill="#3dff70"/></g>
+<text class="l17 glow" x="26" y="446" fill="#9fe8a9" xml:space="preserve">▸ verdict: done verified and approved</text>
+<g class="c17"><rect class="blink" x="26" y="434" width="8" height="15" fill="#3dff70"/></g>
+<text class="l18 glow" x="26" y="468" fill="#9fe8a9" xml:space="preserve"> </text>
+<g class="c18"><rect class="blink" x="26" y="456" width="8" height="15" fill="#3dff70"/></g>
+<text class="l19 glow" x="26" y="490" fill="#3dff70" xml:space="preserve">✓ done after 3 iterations, 2m14s, $0.29</text>
+<g class="c19"><rect class="blink" x="26" y="478" width="8" height="15" fill="#3dff70"/></g>
+</g>
+</svg>

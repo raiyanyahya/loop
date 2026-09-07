@@ -5,6 +5,11 @@
 npx loop-cli demo        # watch a loop work, no API key needed
 ```
 
+<p align="center"><img src="docs/demo.svg" width="760" alt="loop run, replayed: iteration 3 of 25 on claude. The agent finishes the README and declares done, the check passes, git commits, the critic approves, verdict done."></p>
+
+<details>
+<summary>The same run as plain text</summary>
+
 ```
   ─── iteration 3/25 ─────────────────────────────────────── claude · 1m33s · $0.20 ───
 
@@ -25,6 +30,8 @@ npx loop-cli demo        # watch a loop work, no API key needed
 
   ✓ done after 3 iterations, 2m14s, $0.29
 ```
+
+</details>
 
 ---
 
