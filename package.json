@@ -33,7 +33,8 @@
     "test": "node scripts/test.js",
     "demo": "node bin/loop.js demo",
     "demo:svg": "node scripts/demo-svg.js",
-    "test:torture": "bash scripts/torture.sh"
+    "test:torture": "bash scripts/torture.sh",
+    "demo:video": "node scripts/demo-video.js"
   },
   "keywords": [
     "loop",

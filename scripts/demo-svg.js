@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Generates docs/demo.svg: an animated, looping replay of a real `loop run` in a plain terminal window,
 // coloured the way the CLI colours its output. GitHub plays it straight from the README.
+// Also exports the transcript and a static frame renderer for scripts/demo-video.js.
 //
 // The transcript is a real run (2026-09-07): Claude Haiku 4.5 as worker and critic, permissions: edits,
 // a three-item checklist, `node test.js` as the check, test.js protected, git commits on. Three iterations,
@@ -64,37 +65,17 @@ const LINE_H = 21;
 const FONT = 12.5;
 const RADIUS = 10;
 const H = BAR_H + PAD_Y * 2 + LINES.length * LINE_H + 4;
+const FONT_STACK = "'SF Mono','Cascadia Code','JetBrains Mono','Fira Code',Menlo,Consolas,'DejaVu Sans Mono',monospace";
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const rowY = (i) => BAR_H + PAD_Y + FONT + i * LINE_H;
+const spansFor = (segs) => segs.map(([text, color, bold]) => `<tspan fill="${color}"${bold ? ' font-weight="600"' : ''}>${esc(text)}</tspan>`).join('');
+const cursorRect = (i, cls) => `<rect${cls ? ` class="${cls}"` : ''} x="${PAD_X}" y="${rowY(i) - FONT + 1}" width="8" height="15" fill="${C.fg}"/>`;
 
-const times = [];
-let t = 0;
-for (const l of LINES) {
-  t += l[1];
-  times.push(t);
-}
-const total = t + HOLD;
-const pct = (ms) => ((ms / total) * 100).toFixed(3);
-const after = (p) => (Number(p) + 0.01).toFixed(3);
-
-let css = `text{font-family:'SF Mono','Cascadia Code','JetBrains Mono','Fira Code',Menlo,Consolas,'DejaVu Sans Mono',monospace;font-size:${FONT}px;white-space:pre}\n`;
-let body = '';
-LINES.forEach(([segs], i) => {
-  const y = BAR_H + PAD_Y + FONT + i * LINE_H;
-  const start = pct(times[i]);
-  css += `.l${i}{opacity:0;animation:a${i} ${total}ms linear infinite}@keyframes a${i}{0%{opacity:0}${start}%{opacity:0}${after(start)}%{opacity:1}100%{opacity:1}}\n`;
-  const spans = segs.map(([text, color, bold]) => `<tspan fill="${color}"${bold ? ' font-weight="600"' : ''}>${esc(text)}</tspan>`).join('');
-  body += `<text class="l${i}" x="${PAD_X}" y="${y}" xml:space="preserve">${spans}</text>\n`;
-  const from = i === 0 ? 0 : times[i - 1];
-  const to = times[i];
-  css += `.c${i}{opacity:0;animation:c${i} ${total}ms linear infinite}@keyframes c${i}{0%{opacity:0}${pct(from)}%{opacity:0}${after(pct(from))}%{opacity:1}${pct(to)}%{opacity:1}${after(pct(to))}%{opacity:0}100%{opacity:0}}\n`;
-  body += `<g class="c${i}"><rect class="blink" x="${PAD_X}" y="${y - FONT + 1}" width="8" height="15" fill="${C.fg}"/></g>\n`;
-});
-css += `.blink{animation:blink 1s step-end infinite}@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}\n`;
-
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="A real loop run, replayed: Claude Haiku builds a greeting library over three iterations. Iteration 1 claims done and is rejected with two checklist items open; iteration 3 finishes, the check passes, git commits, the critic approves, verdict done. 2m13s, $0.23.">
+function window(css, body, label) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}">
 <title>loop run, replayed</title>
-<style>${css}</style>
+<style>text{font-family:${FONT_STACK};font-size:${FONT}px;white-space:pre}\n${css}</style>
 <defs><clipPath id="win"><rect width="${W}" height="${H}" rx="${RADIUS}"/></clipPath></defs>
 <g clip-path="url(#win)">
   <rect width="${W}" height="${H}" fill="${C.bg}"/>
@@ -105,7 +86,48 @@ ${body}</g>
 <rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="${RADIUS}" fill="none" stroke="#3a3f4b"/>
 </svg>
 `;
+}
 
-const out = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'demo.svg');
-fs.writeFileSync(out, svg);
-console.log(`wrote ${path.relative(process.cwd(), out)} (${(svg.length / 1024).toFixed(1)} kB, ${LINES.length} lines, ${(total / 1000).toFixed(1)}s cycle)`);
+const LABEL = 'A real loop run, replayed: Claude Haiku builds a greeting library over three iterations. Iteration 1 claims done and is rejected with two checklist items open; iteration 3 finishes, the check passes, git commits, the critic approves, verdict done. 2m13s, $0.23.';
+
+/** The looping animated SVG used by the README. */
+export function animatedSvg() {
+  const times = [];
+  let t = 0;
+  for (const l of LINES) {
+    t += l[1];
+    times.push(t);
+  }
+  const total = t + HOLD;
+  const pct = (ms) => ((ms / total) * 100).toFixed(3);
+  const after = (p) => (Number(p) + 0.01).toFixed(3);
+  let css = '';
+  let body = '';
+  LINES.forEach(([segs], i) => {
+    const start = pct(times[i]);
+    css += `.l${i}{opacity:0;animation:a${i} ${total}ms linear infinite}@keyframes a${i}{0%{opacity:0}${start}%{opacity:0}${after(start)}%{opacity:1}100%{opacity:1}}\n`;
+    body += `<text class="l${i}" x="${PAD_X}" y="${rowY(i)}" xml:space="preserve">${spansFor(segs)}</text>\n`;
+    const from = i === 0 ? 0 : times[i - 1];
+    const to = times[i];
+    css += `.c${i}{opacity:0;animation:c${i} ${total}ms linear infinite}@keyframes c${i}{0%{opacity:0}${pct(from)}%{opacity:0}${after(pct(from))}%{opacity:1}${pct(to)}%{opacity:1}${after(pct(to))}%{opacity:0}100%{opacity:0}}\n`;
+    body += `<g class="c${i}">${cursorRect(i, 'blink')}</g>\n`;
+  });
+  css += `.blink{animation:blink 1s step-end infinite}@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}\n`;
+  return { svg: window(css, body, LABEL), total };
+}
+
+/** A static frame with the first k lines visible and the cursor on the next row (for video rendering). */
+export function frameSvg(k) {
+  let body = '';
+  for (let i = 0; i < Math.min(k, LINES.length); i++) body += `<text x="${PAD_X}" y="${rowY(i)}" xml:space="preserve">${spansFor(LINES[i][0])}</text>\n`;
+  if (k < LINES.length) body += cursorRect(k) + '\n';
+  return window('', body, LABEL);
+}
+
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) {
+  const { svg, total } = animatedSvg();
+  const out = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'demo.svg');
+  fs.writeFileSync(out, svg);
+  console.log(`wrote ${path.relative(process.cwd(), out)} (${(svg.length / 1024).toFixed(1)} kB, ${LINES.length} lines, ${(total / 1000).toFixed(1)}s cycle)`);
+}
